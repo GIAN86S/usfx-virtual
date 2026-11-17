@@ -18,7 +18,14 @@ export const ICONOS = {
  "mas": "<path pathLength=\"1\" d=\"M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2z\" /> <path pathLength=\"1\" d=\"M8 12h8\" /> <path pathLength=\"1\" d=\"M12 8v8\" />",
  "check": "<path pathLength=\"1\" d=\"M20 6 9 17l-5-5\" />",
  "libro": "<path pathLength=\"1\" d=\"M12 5v16\" /> <path pathLength=\"1\" d=\"M16 13h2\" /> <path pathLength=\"1\" d=\"M16 9h2\" /> <path pathLength=\"1\" d=\"M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z\" /> <path pathLength=\"1\" d=\"M6 13h2\" /> <path pathLength=\"1\" d=\"M6 9h2\" />",
- "diploma": "<path pathLength=\"1\" d=\"M15 12h-5\" /> <path pathLength=\"1\" d=\"M15 8h-5\" /> <path pathLength=\"1\" d=\"M19 17V5a2 2 0 0 0-2-2H4\" /> <path pathLength=\"1\" d=\"M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3\" />"
+ "diploma": "<path pathLength=\"1\" d=\"M15 12h-5\" /> <path pathLength=\"1\" d=\"M15 8h-5\" /> <path pathLength=\"1\" d=\"M19 17V5a2 2 0 0 0-2-2H4\" /> <path pathLength=\"1\" d=\"M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3\" />",
+ "preguntas": "<path pathLength=\"1\" d=\"M2 12a10 10 0 1 0 20 0a10 10 0 1 0 -20 0\" /> <path pathLength=\"1\" d=\"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3\" /> <path pathLength=\"1\" d=\"M12 17h.01\" />",
+ "personas": "<path pathLength=\"1\" d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <path pathLength=\"1\" d=\"M16 3.128a4 4 0 0 1 0 7.744\" /> <path pathLength=\"1\" d=\"M22 21v-2a4 4 0 0 0-3-3.87\" /> <path pathLength=\"1\" d=\"M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0\" />",
+ "video": "<path pathLength=\"1\" d=\"M9 9.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997A1 1 0 0 1 9 14.996z\" /> <path pathLength=\"1\" d=\"M2 12a10 10 0 1 0 20 0a10 10 0 1 0 -20 0\" />",
+ "flecha": "<path pathLength=\"1\" d=\"M5 12h14\" /> <path pathLength=\"1\" d=\"m12 5 7 7-7 7\" />",
+ "pluma": "<path pathLength=\"1\" d=\"M13 21h8\" /> <path pathLength=\"1\" d=\"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z\" />",
+ "mensaje": "<path pathLength=\"1\" d=\"M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719\" />",
+ "biblioteca": "<path pathLength=\"1\" d=\"M4 3h6a1 1 0 0 1 1 1v16a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1v-16a1 1 0 0 1 1 -1z\" /> <path pathLength=\"1\" d=\"M7 3v18\" /> <path pathLength=\"1\" d=\"M20.4 18.9c.2.5-.1 1.1-.6 1.3l-1.9.7c-.5.2-1.1-.1-1.3-.6L11.1 5.1c-.2-.5.1-1.1.6-1.3l1.9-.7c.5-.2 1.1.1 1.3.6Z\" />"
 } as const;
 export type Icono = keyof typeof ICONOS;
 export const ico = (n: Icono, clase = '') => `<svg class="ico ${clase}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONOS[n]}</svg>`;

@@ -14,6 +14,7 @@ const MAPA = {
   derecho: 'scale', psicologia: 'psi', gerencia: 'landmark', sistemas: 'cog', contaduria: 'calculator', filosofia: 'buho',
   casa: 'house', titulo: 'graduation-cap', mundo: 'globe', celular: 'smartphone', calendario: 'calendar-days', mano: 'hand-heart',
   campana: 'bell', descargar: 'download', compartir: 'share', mas: 'square-plus', check: 'check', libro: 'book-open-text', diploma: 'scroll-text',
+  preguntas: 'circle-help', personas: 'users', video: 'circle-play', flecha: 'arrow-right', pluma: 'pen-line', mensaje: 'message-circle', biblioteca: 'library-big',
 };
 // Safari dibuja mal pathLength en <circle>, <rect> y <line>: todo se convierte a <path>.
 const at = (t, n) => Number((t.match(new RegExp(`\\s${n}="([^"]*)"`)) || [])[1] ?? 0);

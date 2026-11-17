@@ -74,10 +74,26 @@ const io = new IntersectionObserver((entradas) => {
   }
 }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 });
 const observar = (el: Element, fn?: () => void) => { if (fn) alVer.set(el, fn); io.observe(el); };
-if (reducido) { $$('[data-rev],[data-palabras]').forEach((e) => e.classList.add('vis')); }
-else $$('[data-rev],[data-palabras]').forEach((e) => observar(e));
-// el héroe aparece de inmediato
-requestAnimationFrame(() => $$('.hero [data-rev], .hero [data-palabras]').forEach((e) => e.classList.add('vis')));
+if (reducido) { $$('[data-rev],[data-palabras],[data-mascara]').forEach((e) => e.classList.add('vis')); }
+else $$('[data-rev],[data-palabras],[data-mascara]').forEach((e) => { if (!e.closest('.hero')) observar(e); });
+/* ═══ Entrada: telón con el escudo, una vez por sesión ═══ */
+const intro = $('#intro');
+const mostrarHeroe = () => {
+  document.documentElement.classList.add('listo');
+  $$('.hero [data-rev], .hero [data-palabras]').forEach((e) => e.classList.add('vis'));
+};
+let introVista = false;
+try { introVista = !!sessionStorage.getItem('usfx-intro'); sessionStorage.setItem('usfx-intro', '1'); } catch { introVista = true; }
+if (reducido || introVista) { intro.hidden = true; requestAnimationFrame(mostrarHeroe); }
+else {
+  intro.classList.add('activa');
+  const salir = () => {
+    intro.classList.add('fuera');
+    setTimeout(mostrarHeroe, 250);
+    setTimeout(() => { intro.hidden = true; }, 1300);
+  };
+  Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 900))]).then(() => setTimeout(salir, 1150));
+}
 
 /* ═══ Anuncio ═══ */
 try { if (sessionStorage.getItem('usfx-anuncio')) $('#anuncio').hidden = true; } catch { /* nada */ }
@@ -193,6 +209,8 @@ tabs.innerHTML = CARRERAS.map((c, i) => `
     <i class="tab-ico">${ico(c.id)}</i><span><b>${esc(c.nombre)}</b><small>${esc(c.facultad)}</small></span>
   </button>`).join('');
 const ROMANOS = ['Primer', 'Segundo', 'Tercer', 'Cuarto', 'Quinto'];
+// Punto de interés de cada foto, para que nunca se corten personas ni edificios
+const ENCUADRE: Record<Carrera['id'], string> = { derecho: '50% 24%', psicologia: '50% 78%', gerencia: '50% 30%', sistemas: '50% 50%', contaduria: '50% 50%', filosofia: '50% 66%' };
 function pintarCarrera(id: Carrera['id'], cursoAbierto = esCelular() ? -1 : 0) {
   const c = CARRERAS.find((x) => x.id === id)!;
   $$<HTMLButtonElement>('.exp-tab', tabs).forEach((t) => { const on = t.dataset.c === id; t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; });
@@ -200,7 +218,7 @@ function pintarCarrera(id: Carrera['id'], cursoAbierto = esCelular() ? -1 : 0) {
   panel.style.setProperty('--c', c.color);
   const materias = c.plan.reduce((n, cur) => n + cur.length, 0);
   panel.innerHTML = `
-    <div class="exp-media"><img src="${img(c.img)}" alt="" width="900" height="640"><div class="exp-media-txt"><span class="medallon">${ico(c.id)}</span><p>${esc(c.facultad)}</p><h3>${esc(c.nombre)}</h3></div></div>
+    <div class="exp-media"><img src="${img(c.img)}" alt="Imagen de la carrera de ${esc(c.nombre)}" width="1400" height="933" style="object-position:${ENCUADRE[c.id]}"><div class="exp-media-txt"><span class="medallon">${ico(c.id)}</span><p>${esc(c.facultad)}</p><h3>${esc(c.nombre)}</h3></div></div>
     <div class="exp-cuerpo">
       <div>
         <p class="exp-resumen">${esc(c.resumen)}</p>
@@ -280,6 +298,7 @@ carr.innerHTML = DOCENTES.map((d) => `
     <b>${esc(d.nombre)}</b><span>${esc(d.rol)}</span>
     <span class="ver"><i aria-hidden="true">→</i>Ver trayectoria</span>
   </a>`).join('');
+$$('.doc', carr).forEach((d) => (reducido ? d.classList.add('vis') : observar(d)));
 const paso = () => (carr.querySelector<HTMLElement>('.doc')?.offsetWidth ?? 280) + 18;
 const prev = $<HTMLButtonElement>('#doc-prev'), next = $<HTMLButtonElement>('#doc-next');
 const estadoCarr = () => { prev.disabled = carr.scrollLeft < 8; next.disabled = carr.scrollLeft + carr.clientWidth >= carr.scrollWidth - 8; };

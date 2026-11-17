@@ -126,5 +126,5 @@ export function iniciarBienvenida() {
   const cerradaHace = Date.now() - Number(leer(K_CERRADA) || 0);
   if (yaTodo || cerradaHace < TRES_DIAS) return;
   // Aparece cuando la persona ya vio la portada, sin taparla de entrada.
-  setTimeout(() => { if (document.visibilityState === 'visible' && $('#menu-total').hidden) abrirHoja(); }, 3200);
+  setTimeout(() => { if (document.visibilityState === 'visible' && $('#menu-total').hidden) abrirHoja(); }, 4600);
 }

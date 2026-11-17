@@ -53,29 +53,49 @@
 <div class="menu-total" id="menu-total" hidden>
   <div class="menu-fondo" aria-hidden="true"></div>
   <nav class="menu-int" aria-label="Menú principal">
-    <div class="menu-col menu-principal">
-      <p class="ceja">Explora</p>
-      <a href="#carreras" style="--i:0">Carreras</a>
-      <a href="#por-que" style="--i:1">Por qué la USFX</a>
-      <a href="#docentes" style="--i:2">Docentes</a>
-      <a href="#admision" style="--i:3">Admisión</a>
-      <a href="#tutoriales" style="--i:4">Tutoriales</a>
-      <a href="#preguntas" style="--i:5">Preguntas frecuentes</a>
-    </div>
-    <div class="menu-col menu-lateral">
-      <p class="ceja">Accesos</p>
-      <a class="sec" href="./campus/">Campus virtual</a>
-      <a class="sec" href="./matricula/">Matrícula</a>
-      <a class="sec" href="./notas/">Notas</a>
-      <a class="sec" href="./chat/">Chat oficial</a>
-      <p class="ceja" style="margin-top:28px">Comunidad</p>
-      <a class="sec" href="https://usfx.bo/" target="_blank" rel="noopener">USFX · Sitio oficial</a>
-      <a class="sec" href="https://universitarios.usfx.bo/" target="_blank" rel="noopener">SUNIVER</a>
-      <a class="sec" href="https://bibliotecas.usfx.bo/" target="_blank" rel="noopener">Biblioteca</a>
-      <a class="btn rojo" style="margin-top:30px" href="#preinscripcion" data-ir-form>Preinscríbete gratis</a>
-      <a class="sec instalar-lnk" href="#" data-abrir-hoja><span data-ico="celular"></span>Instalar la app y activar avisos</a>
-    </div>
+    <a class="menu-cta" href="#preinscripcion" data-ir-form>
+      <span class="mc-ico" data-ico="pluma"></span>
+      <span><b>Preinscríbete gratis</b><small>Gestión 2027 · Toma un minuto</small></span>
+      <span class="mc-fl" data-ico="flecha"></span>
+    </a>
+
+    <section class="menu-grupo" style="--i:0">
+      <h2>Quiero estudiar</h2>
+      <a href="#carreras"><span class="mi" data-ico="libro"></span><span><b>Carreras</b><small>Las 6 carreras y sus planes de estudio</small></span></a>
+      <a href="#admision"><span class="mi" data-ico="diploma"></span><span><b>Cómo ingresar</b><small>Los 4 pasos de admisión</small></span></a>
+      <a href="#preguntas"><span class="mi" data-ico="preguntas"></span><span><b>Preguntas frecuentes</b><small>Costos, títulos y requisitos</small></span></a>
+    </section>
+
+    <section class="menu-grupo" style="--i:1">
+      <h2>Conoce la USFX</h2>
+      <a href="#por-que"><span class="mi" data-ico="titulo"></span><span><b>Por qué estudiar aquí</b><small>Título, modalidad y apoyo</small></span></a>
+      <a href="#docentes"><span class="mi" data-ico="personas"></span><span><b>Docentes</b><small>Nuestro claustro internacional</small></span></a>
+      <a href="#tutoriales"><span class="mi" data-ico="video"></span><span><b>Tutoriales en video</b><small>Cada trámite, paso a paso</small></span></a>
+    </section>
+
+    <section class="menu-grupo menu-apps" style="--i:2">
+      <h2>Ya soy estudiante</h2>
+      <div class="apps-rej">
+        <a href="./campus/"><img src="/icons/campus-192.png" alt="" width="44" height="44"><b>Campus</b></a>
+        <a href="./notas/"><img src="/icons/notas-192.png" alt="" width="44" height="44"><b>Notas</b></a>
+        <a href="./matricula/"><img src="/icons/matricula-192.png" alt="" width="44" height="44"><b>Matrícula</b></a>
+        <a href="./chat/"><img src="/icons/chat-192.png" alt="" width="44" height="44"><b>Chat</b></a>
+      </div>
+      <a class="menu-instalar" href="#" data-abrir-hoja><span class="mi" data-ico="celular"></span><span><b>Instalar la app</b><small>Y recibir avisos en tu celular</small></span></a>
+    </section>
+
+    <p class="menu-pie"><a href="https://usfx.bo/" target="_blank" rel="noopener">USFX oficial</a><a href="https://universitarios.usfx.bo/" target="_blank" rel="noopener">SUNIVER</a><a href="https://bibliotecas.usfx.bo/" target="_blank" rel="noopener">Biblioteca</a><a href="https://si.usfx.bo/si" target="_blank" rel="noopener">Portal Docente</a></p>
   </nav>
+</div>
+
+<!-- ═══ Entrada ═══ -->
+<div class="intro" id="intro" aria-hidden="true">
+  <div class="intro-c">
+    <img src="/logos/usfx-emblema.png" alt="" width="84" height="112">
+    <p class="intro-m"><span>USFX</span> <em>Virtual</em></p>
+    <p class="intro-s">Desde 1624</p>
+    <i class="intro-l"></i>
+  </div>
 </div>
 
 <main id="contenido">
@@ -83,9 +103,8 @@
 <!-- ═══ 1 · HÉROE ═══ -->
 <section class="hero" id="inicio" aria-label="Portada">
   <div class="hero-slides" id="slides" aria-hidden="true">
-    <div class="slide on" style="--img:url(/landing/img/hero-patio.webp)" data-cap="Claustro de la USFX · Sucre, Bolivia"></div>
-    <div class="slide" style="--img:url(/landing/img/hero-torre.webp)" data-cap="Fundada el 27 de marzo de 1624"></div>
-    <div class="slide" style="--img:url(/landing/img/hero-comunidad.webp)" data-cap="Una comunidad que te acompaña"></div>
+    <div class="slide on" style="--img:url(/landing/img/hero-patio.webp);--img-m:url(/landing/img/hero-patio-m.webp)" data-cap="Claustro de la USFX · Sucre, Bolivia"></div>
+    <div class="slide" style="--img:url(/landing/img/hero-torre.webp);--img-m:url(/landing/img/hero-torre-m.webp)" data-cap="Fundada el 27 de marzo de 1624"></div>
   </div>
   <div class="hero-velo" aria-hidden="true"></div>
   <div class="plano" aria-hidden="true"></div>
@@ -138,7 +157,7 @@
   <h2 id="dec-t" class="titulo-xl" data-palabras>Innovación educativa con <em>respaldo histórico.</em></h2>
   <p class="dec-txt" data-rev>La U Virtual pertenece a la Universidad San Francisco Xavier de Chuquisaca, con más de 402 años de antigüedad. Combinamos siglos de tradición académica con plataformas de vanguardia para ofrecer una educación flexible, accesible y de excelencia, sin barreras geográficas y con total flexibilidad horaria.</p>
   <a class="btn pildora" data-rev href="#por-que">Conoce la USFX Virtual</a>
-  <figure class="expansor" id="expansor">
+  <figure class="expansor" id="expansor" data-mascara>
     <img src="/landing/img/patio-ancho.webp" alt="Estudiantes con sus computadoras en el claustro colonial de la Universidad San Francisco Xavier, en Sucre" width="1800" height="900" loading="lazy">
     <figcaption>El claustro de la USFX, en Sucre: el mismo prestigio, ahora en tu pantalla.</figcaption>
   </figure>
@@ -187,7 +206,7 @@
       <span class="bt-ico" data-ico="casa"></span>
       <h3>Estudia sin dejar tu trabajo ni tu ciudad</h3>
       <p>Clases y trámites 100% en línea, con total flexibilidad horaria. Lo único que necesitas es conexión a internet.</p>
-      <img class="bt-foto" src="/landing/img/hero-torre.webp" alt="" width="1600" height="1000" loading="lazy">
+      <picture><source media="(max-width:720px)" srcset="/landing/img/hero-torre-m.webp"><img class="bt-foto" src="/landing/img/hero-torre.webp" alt="Patio de la USFX visto a través de un arco colonial" width="1600" height="1000" loading="lazy"></picture>
     </article>
     <article class="bt bt-b foco" data-rev style="--d:.06s">
       <span class="bt-ico" data-ico="titulo"></span>
@@ -238,6 +257,9 @@
 
 <!-- ═══ 8 · Cita ═══ -->
 <section class="cita" aria-label="Palabras de una directora de carrera">
+  <figure class="foto-grupo" data-mascara>
+    <img src="/landing/img/comunidad-completa.webp" alt="Comunidad de la USFX Virtual en Sucre, con la torre de la universidad al fondo" width="1600" height="698" loading="lazy">
+  </figure>
   <figure data-rev>
     <blockquote>«Ofrecemos una modalidad de estudio flexible e innovadora, diseñada para adaptarse a las necesidades de nuestros estudiantes, quienes pueden acceder a una educación de calidad <em>desde cualquier lugar del mundo.</em>»</blockquote>
     <figcaption><b>Msc. Lenny Durby Cuestas Gómez</b><span>Directora de la Carrera de Gerencia y Administración Pública</span></figcaption>
