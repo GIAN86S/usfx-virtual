@@ -29,6 +29,8 @@ export default defineConfig({
   ],
   build: {
     target: 'es2022',
+    // Las letras nunca se incrustan como data: (la política de seguridad solo permite font-src 'self').
+    assetsInlineLimit: (archivo: string) => (archivo.endsWith('.woff2') ? false : undefined),
     rollupOptions: {
       input: {
         landing: resolve(__dirname, 'index.html'),

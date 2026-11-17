@@ -1,5 +1,6 @@
-import '@fontsource-variable/inter';
-import '@fontsource-variable/source-serif-4';
+import '@fontsource-variable/manrope/wght.css';
+import '@fontsource-variable/cormorant-garamond/wght.css';
+import '@fontsource-variable/cormorant-garamond/wght-italic.css';
 import './landing.css';
 import { CARRERAS, DOCENTES, TUTORIALES, type Carrera } from './datos';
 import { enfocarFormulario, iniciarFormulario, mostrarConteo, registrarOrigen, seleccionarCarrera, yaPreinscrito } from './preinscripcion';
@@ -85,14 +86,11 @@ $('#anuncio-x').addEventListener('click', () => { $('#anuncio').hidden = true; t
 /* ═══ Cabecera inteligente + progreso + sección activa ═══ */
 const slidesFondo = $('#slides');
 const cab = $('#cab'); const prog = $('#progreso'); const menuTotal = $('#menu-total'); const barra = $('#barra-movil');
-let ultimoY = scrollY, pendiente = false;
+let ultimoY = scrollY, pendiente = false; void ultimoY;
 const alDesplazar = () => {
   pendiente = false;
   const y = scrollY;
   cab.classList.toggle('solida', y > 40 || !menuTotal.hidden);
-  cab.classList.toggle('oculta', y > 500 && y > ultimoY + 4 && menuTotal.hidden === true);
-  if (y < ultimoY - 4) cab.classList.remove('oculta');
-  barra.classList.toggle('oculta', cab.classList.contains('oculta'));
   ultimoY = y;
   const alto = document.documentElement.scrollHeight - innerHeight;
   prog.style.transform = `scaleX(${alto > 0 ? y / alto : 0})`;
@@ -112,6 +110,7 @@ const btnMenu = $('#btn-menu');
 const abrirMenu = (abrir: boolean) => {
   document.documentElement.style.setProperty('--cab-fin', `${Math.round(cab.getBoundingClientRect().bottom)}px`);
   menuTotal.hidden = !abrir;
+  cab.classList.toggle('en-menu', abrir);
   btnMenu.setAttribute('aria-expanded', String(abrir));
   btnMenu.querySelector('.ocultar-movil')!.textContent = abrir ? 'Cerrar' : 'Menú';
   document.documentElement.style.overflow = abrir ? 'hidden' : '';
@@ -399,6 +398,23 @@ function carruselTactil(pista: HTMLElement) {
   pintar();
 }
 [$('.bento'), $('#carrusel'), $('#tutos')].forEach(carruselTactil);
+
+/* ═══ Visor de fotografías: tocar una foto la muestra completa ═══ */
+const visor = document.createElement('dialog');
+visor.className = 'visor';
+visor.innerHTML = '<img alt=""><p></p><button class="visor-x" aria-label="Cerrar fotografía">×</button>';
+document.body.append(visor);
+const abrirFoto = (src: string, texto: string) => {
+  const im = visor.querySelector('img')!; im.src = src; im.alt = texto;
+  visor.querySelector('p')!.textContent = texto;
+  visor.showModal();
+};
+visor.addEventListener('click', () => visor.close());
+document.addEventListener('click', (e) => {
+  const im = (e.target as HTMLElement).closest<HTMLImageElement>('.expansor img, .exp-media img, .bt-foto');
+  if (!im) return;
+  abrirFoto(im.currentSrc || im.src, im.alt || im.closest('figure')?.querySelector('figcaption')?.textContent || '');
+});
 
 /* ═══ Formulario y prueba social ═══ */
 iniciarFormulario();
