@@ -3,6 +3,8 @@ import '@fontsource-variable/source-serif-4';
 import './landing.css';
 import { CARRERAS, DOCENTES, TUTORIALES, type Carrera } from './datos';
 import { enfocarFormulario, iniciarFormulario, mostrarConteo, registrarOrigen, seleccionarCarrera, yaPreinscrito } from './preinscripcion';
+import { ico, type Icono } from './iconos';
+import { iniciarBienvenida } from './instalar';
 
 const $ = <T extends HTMLElement = HTMLElement>(s: string, r: ParentNode = document) => r.querySelector(s) as T;
 const $$ = <T extends HTMLElement = HTMLElement>(s: string, r: ParentNode = document) => [...r.querySelectorAll(s)] as T[];
@@ -15,6 +17,26 @@ const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 const sinTildes = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 registrarOrigen();
+
+/* ═══ Íconos de línea que se dibujan al aparecer, como un grabado ═══ */
+const ioTrazo = new IntersectionObserver((es) => {
+  for (const e of es) {
+    if (!e.isIntersecting) continue;
+    const svg = e.target as SVGElement;
+    ioTrazo.unobserve(svg);
+    svg.classList.remove('sin-trazo');
+    setTimeout(() => svg.classList.add('trazado'), 1900);
+  }
+}, { threshold: 0.4 });
+function trazar(raiz: ParentNode = document) {
+  raiz.querySelectorAll<SVGElement>('svg.ico:not(.trazado)').forEach((svg, i) => {
+    if (reducido) { svg.classList.add('trazado'); return; }
+    svg.classList.add('sin-trazo');
+    svg.style.setProperty('--tdel', `${(i % 6) * 0.08}s`);
+    ioTrazo.observe(svg);
+  });
+}
+const pintarIconos = (raiz: ParentNode = document) => raiz.querySelectorAll<HTMLElement>('[data-ico]').forEach((e) => { if (!e.firstElementChild) e.innerHTML = ico(e.dataset.ico as Icono); });
 
 /* ═══ Títulos que se arman palabra por palabra ═══ */
 function partirPalabras(el: HTMLElement) {
@@ -61,6 +83,7 @@ try { if (sessionStorage.getItem('usfx-anuncio')) $('#anuncio').hidden = true; }
 $('#anuncio-x').addEventListener('click', () => { $('#anuncio').hidden = true; try { sessionStorage.setItem('usfx-anuncio', '1'); } catch { /* nada */ } });
 
 /* ═══ Cabecera inteligente + progreso + sección activa ═══ */
+const slidesFondo = $('#slides');
 const cab = $('#cab'); const prog = $('#progreso'); const menuTotal = $('#menu-total'); const barra = $('#barra-movil');
 let ultimoY = scrollY, pendiente = false;
 const alDesplazar = () => {
@@ -74,6 +97,7 @@ const alDesplazar = () => {
   const alto = document.documentElement.scrollHeight - innerHeight;
   prog.style.transform = `scaleX(${alto > 0 ? y / alto : 0})`;
   expandir(); avanzarPasos();
+  if (!reducido && y < innerHeight * 1.2) slidesFondo.style.transform = `translate3d(0, ${(y * 0.32).toFixed(1)}px, 0)`;
 };
 addEventListener('scroll', () => { if (!pendiente) { pendiente = true; requestAnimationFrame(alDesplazar); } }, { passive: true });
 
@@ -126,7 +150,7 @@ pausar(reducido);
 document.addEventListener('visibilitychange', () => { if (document.hidden) clearTimeout(temporizador); else programar(); });
 
 // Tarjeta «¿Qué te gustaría estudiar?»: el primer micro-compromiso.
-$('#hc-opciones').innerHTML = CARRERAS.map((c) => `<button class="hc-op" data-c="${c.id}" style="--c:${c.color}" aria-label="${esc(c.nombre)}"><i></i><span class="c-l">${esc(c.corto)}</span><span class="c-c">${esc(c.corto.split(' ')[0])}</span></button>`).join('');
+$('#hc-opciones').innerHTML = CARRERAS.map((c) => `<button class="hc-op" data-c="${c.id}" style="--c:${c.color}" aria-label="${esc(c.nombre)}"><i class="hc-ico">${ico(c.id)}</i><span class="c-l">${esc(c.corto)}</span><span class="c-c">${esc(c.corto.split(' ')[0])}</span></button>`).join('');
 $('#hc-opciones').addEventListener('click', (e) => {
   const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-c]'); if (!b) return;
   irAlFormulario(b.dataset.c as Carrera['id']);
@@ -167,7 +191,7 @@ $$('.odometro').forEach((b) => {
 const tabs = $('#exp-tabs'); const panel = $('#exp-panel');
 tabs.innerHTML = CARRERAS.map((c, i) => `
   <button class="exp-tab" role="tab" id="tab-${c.id}" aria-controls="exp-panel" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" data-c="${c.id}" style="--c:${c.color}">
-    <i></i><span><b>${esc(c.nombre)}</b><small>${esc(c.facultad)}</small></span>
+    <i class="tab-ico">${ico(c.id)}</i><span><b>${esc(c.nombre)}</b><small>${esc(c.facultad)}</small></span>
   </button>`).join('');
 const ROMANOS = ['Primer', 'Segundo', 'Tercer', 'Cuarto', 'Quinto'];
 function pintarCarrera(id: Carrera['id'], cursoAbierto = esCelular() ? -1 : 0) {
@@ -177,7 +201,7 @@ function pintarCarrera(id: Carrera['id'], cursoAbierto = esCelular() ? -1 : 0) {
   panel.style.setProperty('--c', c.color);
   const materias = c.plan.reduce((n, cur) => n + cur.length, 0);
   panel.innerHTML = `
-    <div class="exp-media"><img src="${img(c.img)}" alt="" width="900" height="640"><div class="exp-media-txt"><p>${esc(c.facultad)}</p><h3>${esc(c.nombre)}</h3></div></div>
+    <div class="exp-media"><img src="${img(c.img)}" alt="" width="900" height="640"><div class="exp-media-txt"><span class="medallon">${ico(c.id)}</span><p>${esc(c.facultad)}</p><h3>${esc(c.nombre)}</h3></div></div>
     <div class="exp-cuerpo">
       <div>
         <p class="exp-resumen">${esc(c.resumen)}</p>
@@ -197,6 +221,7 @@ function pintarCarrera(id: Carrera['id'], cursoAbierto = esCelular() ? -1 : 0) {
           </details>`).join('')}
       </div>
     </div>`;
+  trazar(panel);
 }
 tabs.addEventListener('click', (e) => { const t = (e.target as HTMLElement).closest<HTMLButtonElement>('.exp-tab'); if (t) pintarCarrera(t.dataset.c as Carrera['id']); });
 tabs.addEventListener('keydown', (e) => {
@@ -225,7 +250,7 @@ busca.addEventListener('input', () => {
       return i < 0 ? esc(n) : esc(n.slice(0, i)) + '<mark>' + esc(n.slice(i, i + q.length)) + '</mark>' + esc(n.slice(i + q.length));
     };
     res.innerHTML = hallados.length
-      ? hallados.map((x) => `<button data-c="${x.c.id}" data-ci="${x.ci}" data-s="${esc(x.s)}"><span class="sig">${esc(x.s)}</span><span>${resaltar(x.n)}</span><span class="car" style="--c:${x.c.color}">${esc(x.c.corto)}</span></button>`).join('')
+      ? hallados.map((x) => `<button data-c="${x.c.id}" data-ci="${x.ci}" data-s="${esc(x.s)}"><span class="sig">${esc(x.s)}</span><span>${resaltar(x.n)}</span><span class="car" style="--c:${x.c.color}">${ico(x.c.id)}${esc(x.c.corto)}</span></button>`).join('')
       : `<p class="nada">No encontramos «${esc(busca.value.trim())}». Prueba con otra palabra.</p>`;
     res.hidden = false;
   }, 120);
@@ -377,6 +402,9 @@ function carruselTactil(pista: HTMLElement) {
 
 /* ═══ Formulario y prueba social ═══ */
 iniciarFormulario();
+pintarIconos();
+trazar();
+iniciarBienvenida();
 observar($('#preinscripcion .preins-txt'), mostrarConteo);
 
 alDesplazar();

@@ -4,10 +4,10 @@ import { CARRERAS, type Carrera } from './datos';
 
 const URL_SB = (import.meta.env.VITE_SUPABASE_URL as string) || location.origin;
 const CLAVE = (import.meta.env.VITE_SUPABASE_ANON_KEY as string) || 'demo';
-const VAPID = import.meta.env.VITE_VAPID_PUBLICA as string | undefined;
+export const VAPID = import.meta.env.VITE_VAPID_PUBLICA as string | undefined;
 const FORM_RESPALDO = 'https://forms.gle/gJCDN6Yaq4xi5EjF9';
 // Publicada sin base de datos todavía (por ejemplo, la primera subida a GitHub Pages): se usa el formulario oficial de Google.
-const SIN_SERVIDOR = !import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_DEMO !== '1';
+export const SIN_SERVIDOR = !import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_DEMO !== '1';
 const K_BORRADOR = 'usfx-preins-borrador';
 const K_HECHA = 'usfx-preins-hecha';
 const K_ORIGEN = 'usfx-origen';
@@ -195,9 +195,9 @@ function mostrarExito(codigo: string, nombres: string, carrera: Carrera, repetid
 }
 
 // ── Avisos push ──
-const esIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-const instalada = () => matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
-const claveBin = (b64: string) => {
+export const esIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+export const instalada = () => matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
+export const claveBin = (b64: string) => {
   const s = atob(b64.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(b64.length / 4) * 4, '='));
   return Uint8Array.from(s, (c) => c.charCodeAt(0));
 };

@@ -10,7 +10,13 @@
 <meta property="og:description" content="Cuatro siglos de universidad, ahora desde donde estés. Preinscríbete gratis en menos de un minuto.">
 <meta property="og:image" content="/landing/img/hero-patio.webp">
 <meta property="og:type" content="website">
-<link rel="icon" href="/icons/campus-192.png">
+<link rel="icon" href="/icons/usfx-192.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/usfx-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="USFX Virtual">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script type="module" src="/src/landing/landing.ts"></script>
 </head>
 <body>
@@ -67,6 +73,7 @@
       <a class="sec" href="https://universitarios.usfx.bo/" target="_blank" rel="noopener">SUNIVER</a>
       <a class="sec" href="https://bibliotecas.usfx.bo/" target="_blank" rel="noopener">Biblioteca</a>
       <a class="btn rojo" style="margin-top:30px" href="#preinscripcion" data-ir-form>Preinscríbete gratis</a>
+      <a class="sec instalar-lnk" href="#" data-abrir-hoja><span data-ico="celular"></span>Instalar la app y activar avisos</a>
     </div>
   </nav>
 </div>
@@ -120,6 +127,11 @@
 
 <!-- ═══ 3 · Declaración (estilo Stanford) ═══ -->
 <section class="declaracion" aria-labelledby="dec-t">
+  <div class="sello" data-rev aria-hidden="true">
+    <svg viewBox="0 0 200 200"><defs><path id="aro" d="M100 100m-80 0a80 80 0 1 1 160 0a80 80 0 1 1-160 0"/></defs>
+      <text><textPath href="#aro" textLength="500" lengthAdjust="spacing">UNIVERSIDAD SAN FRANCISCO XAVIER · FUNDADA EN 1624 · SUCRE ·</textPath></text></svg>
+    <img src="/logos/usfx-emblema.png" alt="" width="84" height="112">
+  </div>
   <p class="ceja centro" data-rev>Quiénes somos</p>
   <h2 id="dec-t" class="titulo-xl" data-palabras>Innovación educativa con <em>respaldo histórico.</em></h2>
   <p class="dec-txt" data-rev>La U Virtual pertenece a la Universidad San Francisco Xavier de Chuquisaca, con más de 402 años de antigüedad. Combinamos siglos de tradición académica con plataformas de vanguardia para ofrecer una educación flexible, accesible y de excelencia, sin barreras geográficas y con total flexibilidad horaria.</p>
@@ -170,36 +182,35 @@
   <h2 id="pq-t" class="titulo-l claro" data-palabras>Todo para titularte <em>sin pausar tu vida.</em></h2>
   <div class="bento">
     <article class="bt bt-a foco" data-rev>
-      <span class="bt-num">01</span>
+      <span class="bt-ico" data-ico="casa"></span>
       <h3>Estudia sin dejar tu trabajo ni tu ciudad</h3>
       <p>Clases y trámites 100% en línea, con total flexibilidad horaria. Lo único que necesitas es conexión a internet.</p>
-      <div class="bt-mapa" aria-hidden="true"><i style="--x:30%;--y:62%"></i><i style="--x:44%;--y:40%"></i><i style="--x:58%;--y:70%"></i><i style="--x:70%;--y:30%"></i><i style="--x:22%;--y:30%"></i><i style="--x:82%;--y:58%"></i></div>
+      <img class="bt-foto" src="/landing/img/hero-torre.webp" alt="" width="1600" height="1000" loading="lazy">
     </article>
     <article class="bt bt-b foco" data-rev style="--d:.06s">
-      <span class="bt-num">02</span>
+      <span class="bt-ico" data-ico="titulo"></span>
       <h3>Título de la USFX</h3>
       <p>Te formas en la misma universidad que gradúa profesionales desde 1624.</p>
-      <img class="bt-escudo" src="/logos/usfx-emblema.png" alt="" width="84" height="112" loading="lazy">
     </article>
     <article class="bt bt-c foco" data-rev style="--d:.12s">
-      <span class="bt-num">03</span>
+      <span class="bt-ico" data-ico="mundo"></span>
       <h3>Claustro internacional</h3>
       <p>Catedráticos visitantes de Brasil, Argentina y Alemania.</p>
       <div class="bt-caras" id="bt-caras" aria-hidden="true"></div>
     </article>
     <article class="bt bt-d foco" data-rev style="--d:.06s">
-      <span class="bt-num">04</span>
+      <span class="bt-ico" data-ico="celular"></span>
       <h3>Tu universidad, en el celular</h3>
       <p>Cuatro apps oficiales que se instalan sin tienda: Campus, Chat, Notas y Matrícula.</p>
       <div class="bt-apps"><img src="/icons/campus-192.png" alt="Campus" width="52" height="52" loading="lazy"><img src="/icons/chat-192.png" alt="Chat" width="52" height="52" loading="lazy"><img src="/icons/notas-192.png" alt="Notas" width="52" height="52" loading="lazy"><img src="/icons/matricula-192.png" alt="Matrícula" width="52" height="52" loading="lazy"></div>
     </article>
     <article class="bt bt-e foco" data-rev style="--d:.12s">
-      <span class="bt-num">05</span>
+      <span class="bt-ico" data-ico="calendario"></span>
       <h3>Modalidad anual</h3>
       <p>Un curso por año, con un ritmo claro y tiempo para aprender a fondo.</p>
     </article>
     <article class="bt bt-f foco" data-rev style="--d:.18s">
-      <span class="bt-num">06</span>
+      <span class="bt-ico" data-ico="mano"></span>
       <h3>Nunca estás solo</h3>
       <p>Tutoriales en video, chat oficial con docentes y administración, y avisos al instante en tu celular.</p>
     </article>
@@ -249,7 +260,7 @@
 
 <!-- ═══ 10 · PREINSCRIPCIÓN ═══ -->
 <section class="preins" id="preinscripcion" aria-labelledby="pre-t">
-  <div class="malla tenue" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
+  <img class="marca-agua" src="/logos/usfx-emblema.png" alt="" width="225" height="300" aria-hidden="true" loading="lazy">
   <div class="preins-grid">
     <div class="preins-txt">
       <p class="ceja clara" data-rev>Preinscripción · Gestión 2027</p>
@@ -366,7 +377,7 @@
 
 <!-- ═══ 13 · Cierre ═══ -->
 <section class="cierre" aria-labelledby="cie-t">
-  <div class="malla" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
+  <div class="cierre-foto" aria-hidden="true"></div>
   <img class="cierre-logo" src="/landing/logo-uvirtual-blanco.png" alt="" width="150" height="89" loading="lazy">
   <h2 id="cie-t" class="titulo-xl claro" data-palabras>Tu historia continúa en <em>la universidad más antigua de Bolivia.</em></h2>
   <a class="btn blanco grande magnetico" data-rev href="#preinscripcion" data-ir-form>Preinscribirme a la gestión 2027 <span class="flecha" aria-hidden="true">→</span></a>
@@ -382,7 +393,7 @@
     </div>
     <nav class="pie-nav" aria-label="Mapa del sitio">
       <div><b>Carreras</b><a href="#carreras" data-carrera="derecho">Derecho</a><a href="#carreras" data-carrera="psicologia">Psicología</a><a href="#carreras" data-carrera="gerencia">Gerencia y Adm. Pública</a><a href="#carreras" data-carrera="sistemas">Ingeniería de Sistemas</a><a href="#carreras" data-carrera="contaduria">Contaduría Pública</a><a href="#carreras" data-carrera="filosofia">Filosofía</a></div>
-      <div><b>Accesos</b><a href="./campus/">Campus</a><a href="./matricula/">Matrícula</a><a href="./notas/">Notas</a><a href="./chat/">Chat</a></div>
+      <div><b>Accesos</b><a href="#" data-abrir-hoja>Instalar la app</a><a href="./campus/">Campus</a><a href="./matricula/">Matrícula</a><a href="./notas/">Notas</a><a href="./chat/">Chat</a></div>
       <div><b>Comunidad</b><a href="https://usfx.bo/" target="_blank" rel="noopener">USFX oficial</a><a href="https://universitarios.usfx.bo/" target="_blank" rel="noopener">SUNIVER</a><a href="https://bibliotecas.usfx.bo/" target="_blank" rel="noopener">Biblioteca</a><a href="https://si.usfx.bo/si" target="_blank" rel="noopener">Portal Docente</a><a href="http://admision.usfx.bo/" target="_blank" rel="noopener">Admisión USFX</a></div>
     </nav>
   </div>
@@ -402,6 +413,28 @@
   <p>Preinscríbete en un minuto y recibe requisitos, costos y fechas. Es gratis.</p>
   <a class="btn rojo" href="#preinscripcion" data-ir-form>Sí, quiero la información</a>
 </aside>
+
+<div class="hoja" id="hoja" hidden>
+  <div class="hoja-fondo" data-cerrar-hoja></div>
+  <section class="hoja-panel" role="dialog" aria-modal="true" aria-labelledby="hoja-t">
+    <span class="hoja-asa" aria-hidden="true"></span>
+    <button class="hoja-x" data-cerrar-hoja aria-label="Cerrar">×</button>
+    <div class="hoja-cab">
+      <img src="/icons/usfx-192.png" width="64" height="64" alt="">
+      <div><p class="hc-ceja">Bienvenido a la USFX Virtual</p><h2 id="hoja-t">Lleva tu universidad en el celular</h2></div>
+    </div>
+    <ol class="hoja-pasos">
+      <li id="paso-instalar"><span class="hoja-ico" data-ico="celular"></span><div><b>Instala la app</b><span>Ábrela desde tu pantalla de inicio, sin tiendas ni descargas pesadas.</span></div><button class="btn azul chico" id="btn-instalar" type="button">Instalar</button></li>
+      <li id="paso-avisos"><span class="hoja-ico rojo" data-ico="campana"></span><div><b>Activa los avisos</b><span>Fechas de inscripción, resultados y comunicados, al instante.</span></div><button class="btn rojo chico" id="btn-avisar" type="button">Activar</button></li>
+    </ol>
+    <div class="ios-guia" id="ios-guia" hidden>
+      <p><b>En iPhone o iPad:</b></p>
+      <ol><li>Toca <span class="ios-i" data-ico="compartir"></span> <b>Compartir</b> en la barra de Safari.</li><li>Elige <span class="ios-i" data-ico="mas"></span> <b>Agregar a inicio</b>.</li><li>Abre la USFX Virtual desde su ícono y activa los avisos.</li></ol>
+    </div>
+    <p class="hoja-nota" id="hoja-nota" role="status"></p>
+    <button class="btn texto hoja-luego" data-cerrar-hoja type="button">Ahora no</button>
+  </section>
+</div>
 
 <dialog class="video" id="video" aria-label="Tutorial en video">
   <div class="video-marco"><iframe id="video-iframe" title="Tutorial en video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen"></iframe></div>

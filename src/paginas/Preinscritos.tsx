@@ -152,19 +152,33 @@ export function Preinscritos() {
 
 function EnviarAviso({ carrera: inicial, cerrar }: { carrera: string; cerrar: () => void }) {
   const aviso = useAviso();
-  const [f, setF] = useState({ titulo: '', cuerpo: '', carrera: inicial });
+  const [f, setF] = useState({ titulo: '', cuerpo: '', carrera: inicial, publico: 'todos' as 'todos' | 'preinscritos' | 'visitantes' });
+  const alcance = useQuery({ queryKey: ['conteo-avisos'], queryFn: () => rpc<{ visitantes: number; preinscritos: number }>('conteo_avisos') });
   const m = useMutation({
-    mutationFn: () => rpc<number>('avisar_preinscritos', { p_titulo: f.titulo, p_cuerpo: f.cuerpo, p_carrera: f.carrera || null }),
+    mutationFn: async () => {
+      const args = { p_titulo: f.titulo, p_cuerpo: f.cuerpo, p_carrera: f.carrera || null };
+      let n = 0;
+      if (f.publico !== 'visitantes') n += await rpc<number>('avisar_preinscritos', args);
+      if (f.publico !== 'preinscritos') n += await rpc<number>('avisar_visitantes', args);
+      return n;
+    },
     onSuccess: (n) => { aviso(n ? `Aviso en camino a ${num(n)} dispositivos` : 'Aviso guardado. Aún nadie de este grupo activó las notificaciones.'); cerrar(); },
     onError: (e: any) => aviso(e.message, true),
   });
   return (
-    <Modal titulo="Enviar aviso a preinscritos" cerrar={cerrar}>
+    <Modal titulo="Enviar aviso" cerrar={cerrar}>
       <form className="pila" onSubmit={(e) => { e.preventDefault(); m.mutate(); }}>
-        <p className="tenue chico" style={{ margin: 0 }}>Llega como notificación al celular o computadora de quienes activaron los avisos al preinscribirse. Al tocarla, se abre la landing en la sección de admisión.</p>
-        <Campo etiqueta="Para">
+        <p className="tenue chico" style={{ margin: 0 }}>Llega como notificación al celular o computadora de quienes activaron los avisos en la página. Al tocarla, se abre la landing en la sección de admisión.</p>
+        <Campo etiqueta="Público" ayuda={alcance.data ? `${num(alcance.data.visitantes)} visitantes y ${num(alcance.data.preinscritos)} preinscritos con avisos activos` : undefined}>
+          <select className="ent" value={f.publico} onChange={(e) => setF({ ...f, publico: e.target.value as any })}>
+            <option value="todos">Todos: visitantes y preinscritos</option>
+            <option value="preinscritos">Solo preinscritos</option>
+            <option value="visitantes">Solo visitantes (aún no se preinscriben)</option>
+          </select>
+        </Campo>
+        <Campo etiqueta="Carrera">
           <select className="ent" value={f.carrera} onChange={(e) => setF({ ...f, carrera: e.target.value })}>
-            <option value="">Todos los preinscritos</option>{Object.entries(CARRERAS_LANDING).map(([k, v]) => <option key={k} value={k}>Preinscritos a {v}</option>)}
+            <option value="">Todas las carreras</option>{Object.entries(CARRERAS_LANDING).map(([k, v]) => <option key={k} value={k}>Interesados en {v}</option>)}
           </select>
         </Campo>
         <Campo etiqueta="Título" ayuda={`${f.titulo.length}/80`}><input className="ent" required minLength={3} maxLength={80} placeholder="¡Abrimos las postulaciones 2027!" value={f.titulo} onChange={(e) => setF({ ...f, titulo: e.target.value })} /></Campo>

@@ -278,3 +278,27 @@ test('preinscritos: avisos push y quién ve los datos', async () => {
   const subs = (await db.query(`select * from suscripciones_preinscritos(null,'derecho',0,10)`)).rows;
   assert.equal(subs.length, 1); assert.equal(subs[0].tabla, 'preinscripcion_push');
 });
+
+test('visitantes: activan avisos sin cuenta, nadie sin permiso los lee, solo administración les escribe', async () => {
+  const [{ n: nueva }] = await q(null, `select suscribir_visitante('https://push.example/v1','k','a','sistemas') n`);
+  assert.equal(nueva, true);
+  const [{ n: repetida }] = await q(null, `select suscribir_visitante('https://push.example/v1','k2','a2',null) n`);
+  assert.equal(repetida, false, 'el mismo dispositivo no se duplica');
+  const [v] = (await db.query(`select * from visitante_push where endpoint='https://push.example/v1'`)).rows;
+  assert.equal(v.carrera, 'sistemas', 'renovar sin carrera no borra la carrera');
+  assert.equal(v.p256dh, 'k2', 'renueva las claves');
+  assert.equal((await db.query(`select count(*)::int n from cola_push where visitante_id=$1`, [v.id])).rows[0].n, 1, 'una sola bienvenida, solo a ese dispositivo');
+  await assert.rejects(q(null, `select suscribir_visitante('http://inseguro','k','a')`), /no es válida/);
+  await assert.rejects(q(null, `select suscribir_visitante('https://x','k','a','medicina')`), /no es válida/);
+  await assert.rejects(q(null, `select * from visitante_push`), /permission/);
+  await assert.rejects(q(U.ana, `select * from visitante_push`), /permission/);
+  await niega(q(U.ana, `select avisar_visitantes('Hola','x')`));
+  await assert.rejects(q(null, `select avisar_visitantes('Hola','x')`), /permission/);
+  const [{ n }] = await q(U.sistemas, `select avisar_visitantes('Inscripciones abiertas','Ya puedes postular') n`);
+  assert.equal(n, 1);
+  const [{ c }] = await q(U.sistemas, `select conteo_avisos() c`);
+  assert.equal(c.visitantes, 1);
+  assert.equal((await q(U.ana, `select conteo_avisos() c`))[0].c, null, 'un estudiante no ve el conteo');
+  const subs = (await db.query(`select * from suscripciones_visitantes(null,null,0,10)`)).rows;
+  assert.equal(subs[0].tabla, 'visitante_push');
+});

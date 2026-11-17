@@ -16,9 +16,11 @@ Deno.serve(async (req) => {
     const carga = JSON.stringify({ titulo: item.titulo, cuerpo: item.cuerpo, url: item.url, tag: item.conversacion_id ?? undefined });
     let desde = 0;
     for (;;) {
-      // Destinos: un usuario, preinscritos de la landing (uno o todos) o los miembros de una conversación.
+      // Destinos: un usuario, visitantes o preinscritos de la landing (uno o todos), o los miembros de una conversación.
       const { data: subs } = item.usuario_id
         ? await srv.from('push_suscripciones').select('id, endpoint, p256dh, auth').eq('usuario_id', item.usuario_id).range(desde, desde + LOTE_SUBS - 1)
+        : item.visitante_id || item.a_visitantes
+          ? await srv.rpc('suscripciones_visitantes', { p_visitante: item.visitante_id, p_carrera: item.filtro_carrera, p_desde: desde, p_n: LOTE_SUBS })
         : item.preinscripcion_id || item.a_preinscritos
           ? await srv.rpc('suscripciones_preinscritos', { p_lead: item.preinscripcion_id, p_carrera: item.filtro_carrera, p_desde: desde, p_n: LOTE_SUBS })
           : await srv.rpc('suscripciones_conversacion', { p_conv: item.conversacion_id, p_excluir: item.excluir, p_desde: desde, p_n: LOTE_SUBS });

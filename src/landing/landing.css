@@ -132,7 +132,7 @@ h1 em,h2 em{font-style:italic;font-weight:350}
   linear-gradient(180deg,#081634b3 0%,#08163433 30%,#0816344d 55%,#081634f2 100%),
   linear-gradient(90deg,#081634e6 0%,#08163499 45%,#08163400 80%)}
 /* malla de color que se mueve (Stanford) */
-.malla{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none;mix-blend-mode:screen;opacity:.55}
+.malla{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none;mix-blend-mode:screen;opacity:.32}
 .malla i{position:absolute;width:52vmax;height:52vmax;border-radius:50%;filter:blur(70px);opacity:.55}
 .malla .b1{background:radial-gradient(circle,#e3343f 0%,#e3343f00 65%);left:-12%;top:30%;animation:orbita 26s ease-in-out infinite}
 .malla .b2{background:radial-gradient(circle,#2d63c8 0%,#2d63c800 65%);right:-18%;top:-22%;animation:orbita 32s ease-in-out infinite reverse}
@@ -214,7 +214,7 @@ h1 em,h2 em{font-style:italic;font-weight:350}
 .busca-res button{display:flex;align-items:center;gap:12px;width:100%;padding:11px 14px;border:0;background:none;border-radius:12px;text-align:left;cursor:pointer;font-size:14.5px}
 .busca-res button:hover,.busca-res button:focus-visible{background:var(--crema)}
 .busca-res mark{background:#e3343f22;color:inherit;border-radius:2px;padding:0;box-shadow:0 0 0 2px #e3343f22}
-.busca-res .sig{flex:none;font:600 12px/1 ui-monospace,monospace;color:var(--suave);width:62px}
+.busca-res .sig{flex:none;font:650 12px/1 'Inter Variable',sans-serif;letter-spacing:.04em;color:var(--suave);width:62px}
 .busca-res .car{margin-left:auto;flex:none;font-size:12px;font-weight:650;padding:4px 10px;border-radius:999px;color:#fff;background:var(--c)}
 .busca-res .nada{padding:14px;color:var(--suave);font-size:14.5px;margin:0}
 
@@ -254,7 +254,7 @@ h1 em,h2 em{font-style:italic;font-weight:350}
 .curso[open] summary::after{transform:rotate(45deg)}
 .curso ul{list-style:none;margin:0;padding:0 0 14px;display:grid;gap:2px}
 .curso li{display:flex;gap:12px;font-size:14px;padding:5px 2px;color:#36405a}
-.curso li code{flex:none;width:58px;font:600 11.5px/1.9 ui-monospace,monospace;color:var(--c)}
+.curso li code{flex:none;width:60px;font:650 11.5px/1.95 'Inter Variable',sans-serif;letter-spacing:.04em;color:var(--c);font-variant-numeric:tabular-nums}
 .curso li.brillo{background:#e3343f1a;border-radius:6px;animation:brillo 2.4s var(--ease)}
 @keyframes brillo{0%,30%{background:#e3343f40}}
 
@@ -357,7 +357,7 @@ h1 em,h2 em{font-style:italic;font-weight:350}
 .preins-qr a{color:#fff;font-weight:650}
 
 @property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
-.form-marco{position:relative;border-radius:28px;padding:2px;background:conic-gradient(from var(--ang),#2d63c8,#e3343f,#7a3f9a,#2d63c8);animation:girar 8s linear infinite;box-shadow:0 40px 100px #00081e80}
+.form-marco{position:relative;border-radius:28px;padding:2px;background:linear-gradient(150deg,#ffffff55,#1f4788 30%,#e3343f 100%);box-shadow:0 40px 100px #00081e80}
 @keyframes girar{to{--ang:360deg}}
 .form,.exito{background:#fff;color:var(--tinta);border-radius:26px;padding:clamp(24px,3vw,40px)}
 .form-cab{margin-bottom:24px}
@@ -742,7 +742,7 @@ h1 em,h2 em{font-style:italic;font-weight:350}
   .porque .puntos{color:#fff}
   .puntos i{width:6px;height:6px;border-radius:999px;background:currentColor;opacity:.22;transition:width .4s var(--ease),opacity .4s}
   .puntos i.on{width:24px;opacity:.95}
-  .puntos b{margin-left:auto;font:600 12px/1 ui-monospace,monospace;letter-spacing:.08em;opacity:.65;font-variant-numeric:tabular-nums}
+  .puntos b{margin-left:auto;font:500 15px/1 'Source Serif 4 Variable',serif;letter-spacing:.02em;opacity:.8;font-variant-numeric:tabular-nums lining-nums}
   .puntos b span{opacity:.55}
 }
 /* Pantallas táctiles: sin efectos de mouse «pegados» y con respuesta al toque */
@@ -758,4 +758,124 @@ h1 em,h2 em{font-style:italic;font-weight:350}
 }
 @media (max-width:360px){
   .titulo-hero{font-size:34px}
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   ÍCONOS Y DETALLES CLÁSICOS
+   Íconos de línea fina que se dibujan solos (como un grabado), sellos y
+   fotografías reales en lugar de efectos tecnológicos.
+   ════════════════════════════════════════════════════════════════════ */
+.ico{width:1em;height:1em;flex:none;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+.ico *{stroke-dasharray:1 1;stroke-dashoffset:0;transition:stroke-dashoffset 1.5s cubic-bezier(.55,0,.25,1) var(--tdel,0s)}
+.ico.sin-trazo *{stroke-dashoffset:1}
+.ico.trazado *{stroke-dasharray:none;transition:none}
+
+/* Portada: carreras con su ícono */
+.hc-op i{display:none}
+.hc-op .hc-ico{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:50%;background:color-mix(in srgb,var(--c) 70%,#0d2150);box-shadow:0 0 0 1px #ffffff2e,inset 0 0 0 3px color-mix(in srgb,var(--c) 85%,#000);font-size:16px;color:#fff;transition:transform .4s var(--ease)}
+.hc-op:hover .hc-ico{transform:rotate(-8deg) scale(1.08)}
+@media (hover:hover){.hero-card{animation:flotar 7s ease-in-out infinite}}
+@keyframes flotar{0%,100%{translate:0 0}50%{translate:0 -7px}}
+
+/* Explorador: pestañas y medallón */
+.exp-tab i{display:none}
+.exp-tab .tab-ico{display:grid;place-items:center;flex:none;width:38px;height:38px;border-radius:50%;background:color-mix(in srgb,var(--c) 10%,#fff);color:var(--c);font-size:19px;border:1px solid color-mix(in srgb,var(--c) 22%,#fff);transition:background .3s,color .3s,transform .4s var(--ease)}
+.exp-tab[aria-selected="true"] .tab-ico{background:var(--c);color:#fff;transform:scale(1.06)}
+.medallon{display:grid;place-items:center;width:58px;height:58px;margin-bottom:14px;border-radius:50%;color:#fff;font-size:28px;background:#ffffff1a;border:1.5px solid #ffffffb3;box-shadow:inset 0 0 0 4px #ffffff14;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.busca-res .car{display:inline-flex;align-items:center;gap:6px}
+.busca-res .car .ico{font-size:13px}
+
+/* Sello giratorio con el escudo */
+.sello{position:relative;width:150px;height:150px;margin:0 auto 26px;display:grid;place-items:center}
+.sello svg{position:absolute;inset:0;width:100%;height:100%;animation:girar-sello 40s linear infinite}
+.sello text{font:600 13.2px 'Inter Variable',sans-serif;letter-spacing:.2em;fill:var(--rojo-o)}
+.sello img{width:62px;height:auto;filter:drop-shadow(0 6px 14px #0d173030)}
+@keyframes girar-sello{to{transform:rotate(360deg)}}
+
+/* Beneficios: medallones con ícono y fotografía real */
+.bt-num,.bt-mapa,.bt-escudo{display:none}
+.bt-ico{display:grid;place-items:center;width:52px;height:52px;margin-bottom:22px;border-radius:50%;font-size:24px;color:#fff;border:1.5px solid #ffffff59;box-shadow:inset 0 0 0 4px #ffffff0d;background:#ffffff0a;transition:transform .5s var(--ease),background .3s}
+.bt:hover .bt-ico{transform:rotate(-6deg) scale(1.06);background:#e3343f33}
+.bt-a{display:flex;flex-direction:column;justify-content:flex-end;min-height:440px;background:linear-gradient(180deg,#0d2150,#081634)}
+.bt-a>*:not(.bt-foto){position:relative;z-index:1}
+.bt-foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transform:scale(1.04);transition:transform 1.4s var(--ease)}
+.bt-foto{-webkit-mask-image:linear-gradient(180deg,#000 0%,#000 30%,#0006 62%,transparent 92%);mask-image:linear-gradient(180deg,#000 0%,#000 30%,#0006 62%,transparent 92%);filter:saturate(.9) brightness(.85)}
+.bt-a:hover .bt-foto{transform:scale(1.08)}
+.bt-a h3,.bt-a p{text-shadow:0 2px 14px #081634}
+.bt-a .bt-ico{background:#e3343f;border-color:#ffffff80}
+
+/* Preinscripción: escudo en marca de agua */
+.marca-agua{position:absolute;right:-60px;bottom:-40px;width:min(440px,60vw);height:auto;opacity:.05;filter:grayscale(1) brightness(3);z-index:-1;pointer-events:none}
+
+/* Cierre: el claustro en movimiento lento */
+.cierre-foto{position:absolute;inset:-6%;z-index:-2;background:url(/landing/img/patio-ancho.webp) center/cover;animation:kenburns 26s ease-in-out infinite alternate}
+.cierre::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#081634d9,#081634b3 50%,#081634f2)}
+
+/* Tutoriales: el botón de reproducir respira */
+.tuto-play::before{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid #e3343f;animation:onda 2.4s ease-out infinite}
+@keyframes onda{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.7);opacity:0}}
+
+/* Menú: enlace para instalar */
+.instalar-lnk{display:inline-flex!important;align-items:center;gap:10px;margin-top:14px}
+.instalar-lnk .ico{font-size:20px;color:#ff9aa0}
+
+/* ═══ Ventana de bienvenida: instalar y activar avisos ═══ */
+.hoja{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:20px}
+.hoja-fondo{position:absolute;inset:0;background:#040b1e99;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);opacity:0;transition:opacity .4s}
+.hoja-panel{position:relative;width:min(460px,100%);max-height:calc(100dvh - 40px);overflow:auto;background:#fff;color:var(--tinta);border-radius:28px;padding:30px 28px 18px;box-shadow:0 40px 120px #040b1e80;transform:translateY(24px) scale(.97);opacity:0;transition:transform .5s var(--ease),opacity .4s}
+.hoja.abierta .hoja-fondo{opacity:1}
+.hoja.abierta .hoja-panel{transform:none;opacity:1}
+.hoja-asa{display:none}
+.hoja-x{position:absolute;right:14px;top:12px;border:0;background:none;font-size:26px;line-height:1;color:var(--suave);cursor:pointer;padding:6px 10px}
+.hoja-cab{display:flex;align-items:center;gap:16px;margin-bottom:22px;padding-right:28px}
+.hoja-cab img{width:64px;height:64px;border-radius:16px;box-shadow:0 10px 24px #08163440}
+.hoja-cab .hc-ceja{color:var(--rojo-o)}
+.hoja-cab h2{font-size:25px;line-height:1.12}
+.hoja-pasos{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.hoja-pasos li{display:flex;align-items:center;gap:14px;padding:14px;border-radius:18px;background:var(--crema);border:1px solid var(--linea);transition:background .3s,border-color .3s}
+.hoja-pasos li.hecho{background:#eef8f2;border-color:#bfe3cc}
+.hoja-pasos li>div{flex:1;min-width:0}
+.hoja-pasos b{display:block;font-size:15.5px}
+.hoja-pasos li>div>span{display:block;font-size:13px;color:var(--suave);line-height:1.45;margin-top:2px}
+.hoja-ico{display:grid;place-items:center;flex:none;width:46px;height:46px;border-radius:50%;background:var(--azul);color:#fff;font-size:22px;box-shadow:inset 0 0 0 3px #ffffff26}
+.hoja-ico.rojo{background:var(--rojo)}
+.hoja-pasos li.hecho .hoja-ico{background:#2a9d62}
+.hoja-pasos .btn{flex:none;min-height:40px;padding:0 16px}
+.hoja-pasos .btn:disabled{opacity:1;background:#2a9d62;box-shadow:none;cursor:default}
+.hoja-pasos .btn .ico{font-size:16px}
+#paso-avisos .hoja-ico .ico{transform-origin:50% 10%;animation:campana 3.2s ease-in-out infinite}
+@keyframes campana{0%,70%,100%{transform:rotate(0)}74%{transform:rotate(14deg)}80%{transform:rotate(-12deg)}86%{transform:rotate(8deg)}92%{transform:rotate(-4deg)}}
+.ios-guia{margin-top:14px;padding:14px 16px;border-radius:16px;background:#1f47880d;border:1px dashed #1f478840;font-size:14px}
+.ios-guia p{margin:0 0 6px}
+.ios-guia ol{margin:0;padding-left:20px;display:grid;gap:4px}
+.ios-i{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:6px;background:#fff;border:1px solid var(--linea);color:var(--azul-v);font-size:14px;vertical-align:-5px}
+.hoja-nota{min-height:1.3em;margin:12px 2px 0;font-size:13.5px;color:var(--suave)}
+.hoja-nota:empty{display:none}
+.hoja-nota.ok{color:#1f7a4b;font-weight:600}
+.hoja-luego{display:block;margin:8px auto 0;font-size:14px}
+html.con-hoja{overflow:hidden}
+
+@media (max-width:720px){
+  .hc-op .hc-ico{width:34px;height:34px;font-size:18px}
+  .exp-tab .tab-ico{width:28px;height:28px;font-size:15px;border:0}
+  .exp-tab[aria-selected="true"] .tab-ico{background:#ffffff26;transform:none}
+  .medallon{width:46px;height:46px;font-size:22px;margin-bottom:10px}
+  .sello{width:124px;height:124px;margin-bottom:20px}
+  .sello img{width:50px}
+  .bt-a{min-height:340px}
+  .bt-ico{width:46px;height:46px;font-size:21px;margin-bottom:18px}
+  /* En el celular la bienvenida sube desde abajo, como una hoja */
+  .hoja{place-items:end stretch;padding:0}
+  .hoja-panel{width:100%;border-radius:26px 26px 0 0;padding:14px 20px calc(16px + env(safe-area-inset-bottom));transform:translateY(100%);opacity:1}
+  .hoja-asa{display:block;width:44px;height:5px;border-radius:5px;background:#d5d9e2;margin:0 auto 16px}
+  .hoja-x{top:18px}
+  .hoja-cab{gap:14px;margin-bottom:18px}
+  .hoja-cab img{width:54px;height:54px;border-radius:14px}
+  .hoja-cab h2{font-size:22px}
+  .hoja-pasos li{padding:12px;gap:12px}
+  .hoja-ico{width:42px;height:42px;font-size:20px}
+}
+@media (prefers-reduced-motion:reduce){
+  .sello svg,.cierre-foto,.tuto-play::before,#paso-avisos .hoja-ico .ico,.hero-card{animation:none!important}
 }
