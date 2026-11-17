@@ -20,7 +20,7 @@ const p = (txt: string): [string, string][][] =>
 
 export const CARRERAS: Carrera[] = [
   {
-    id: 'derecho', nombre: 'Derecho', corto: 'Derecho', facultad: 'Derecho, Ciencias Políticas y Sociales', color: '#1f4788',
+    id: 'derecho', nombre: 'Derecho', corto: 'Derecho', facultad: 'Derecho, Ciencias Políticas y Sociales', color: '#1E3A6E',
     img: 'c-derecho', campus: 'https://campus.usfx.bo/derecho',
     resumen: 'Abogados integrales con sentido humanista y compromiso social, capacitados en el manejo idóneo del derecho plural, la investigación jurídica y la práctica en todas sus modalidades.',
     perfil: ['Práctica forense civil, penal y de procedimientos especiales', 'Derecho plural y derechos de los pueblos indígena originario campesinos', 'Investigación y producción intelectual jurídica'],
@@ -82,7 +82,7 @@ CJS 304 | Derecho de la Seguridad Social
 CJS 226 | Modalidad de Graduación: Tesis, Proyecto de Grado, Trabajo Dirigido o Internado`),
   },
   {
-    id: 'psicologia', nombre: 'Psicología', corto: 'Psicología', facultad: 'Humanidades', color: '#6b2fa3',
+    id: 'psicologia', nombre: 'Psicología', corto: 'Psicología', facultad: 'Humanidades', color: '#5A3A86',
     img: 'c-psicologia', campus: 'https://campus.usfx.bo/psicologia',
     resumen: 'Psicólogos competitivos, críticos y comprometidos con el bienestar y la salud mental de la sociedad, con base científica, tecnológica y humanista.',
     perfil: ['Psicodiagnóstico e intervención clínica, psicoeducativa y psicosocial', 'Enfoques psicoanalítico, cognitivo-conductual, humanista y sistémico', 'Psicología organizacional y jurídica forense'],
@@ -126,7 +126,7 @@ PDG 501 | Proyecto de Grado
 TES 501 | Tesis`),
   },
   {
-    id: 'gerencia', nombre: 'Gerencia y Administración Pública', corto: 'Gerencia Pública', facultad: 'Ciencias Económicas y Empresariales', color: '#c2611a',
+    id: 'gerencia', nombre: 'Gerencia y Administración Pública', corto: 'Gerencia Pública', facultad: 'Ciencias Económicas y Empresariales', color: '#9A5518',
     img: 'c-gerencia', campus: 'https://campus.usfx.bo/gerenciayadmpublica',
     resumen: 'Carrera acreditada y pionera en el sistema universitario boliviano. Forma líderes capaces de transformar y gerenciar las instituciones y empresas públicas del país.',
     perfil: ['Gestión pública, presupuestos y control de gestión', 'Planificación estratégica, proyectos y políticas públicas', 'Finanzas públicas, gestión tributaria y talento humano'],
@@ -172,7 +172,7 @@ GSI 434 | Seminario de Grado II
 GST 427 | Contabilidad Gubernamental`),
   },
   {
-    id: 'sistemas', nombre: 'Ingeniería de Sistemas', corto: 'Sistemas', facultad: 'Ciencia y Tecnología', color: '#0a7cb8',
+    id: 'sistemas', nombre: 'Ingeniería de Sistemas', corto: 'Sistemas', facultad: 'Ciencia y Tecnología', color: '#1D6489',
     img: 'c-sistemas', campus: 'https://campus.usfx.bo/sistemas',
     resumen: 'Ingenieros con enfoque sistémico e integrador, capaces de planificar, desarrollar, optimizar y controlar sistemas socio-técnicos con tecnologías de la información.',
     perfil: ['Programación, bases de datos, redes e infraestructura', 'Ingeniería de software, desarrollo web e inteligencia artificial', 'Gestión estratégica de TI, auditoría y proyectos'],
@@ -234,7 +234,7 @@ SHC 180 | Taller de Grado
 SHC 190 | Trabajo de Titulación`),
   },
   {
-    id: 'contaduria', nombre: 'Contaduría Pública', corto: 'Contaduría', facultad: 'Contaduría Pública y Ciencias Financieras', color: '#c0392b',
+    id: 'contaduria', nombre: 'Contaduría Pública', corto: 'Contaduría', facultad: 'Contaduría Pública y Ciencias Financieras', color: '#A12B2B',
     img: 'c-contaduria', campus: 'https://campus.usfx.bo/contaduria',
     resumen: 'Contadores públicos íntegros y emprendedores, capaces de diseñar, implementar, evaluar y certificar sistemas de información contable confiables y actualizados.',
     perfil: ['Contabilidad superior, de costos y de entidades financieras', 'Auditoría financiera, gubernamental, impositiva y de sistemas', 'Tributación, finanzas y control de gestión'],
@@ -276,7 +276,7 @@ ECO 400 | Seguimiento, Control y Evaluación de Proyectos
 CPA 350 | Práctica Laboral`), // la sigla repite la de «Finanzas y Control de Gestión» en el plan oficial
   },
   {
-    id: 'filosofia', nombre: 'Filosofía', corto: 'Filosofía', facultad: 'Humanidades', color: '#8e1b2c',
+    id: 'filosofia', nombre: 'Filosofía', corto: 'Filosofía', facultad: 'Humanidades', color: '#7A1F33',
     img: 'c-filosofia', campus: 'https://campus.usfx.bo/filosofia',
     resumen: 'Pensadores críticos para un mundo en cambio. Un claustro con catedráticos visitantes de Brasil, Argentina y Alemania, y una tesis que se presenta como artículo indexado.',
     perfil: ['Pensamiento conceptual, científico y crítico, directo a las fuentes', 'Lógica, ética, estética, metafísica y filosofía de la IA', 'Comunicación rigurosa e investigación filosófica'],

@@ -198,7 +198,7 @@ $$('.odometro').forEach((b) => {
   b.setAttribute('aria-label', valor + suf);
   b.innerHTML = [...valor].map((d, i) => `<span class="odo-d" aria-hidden="true"><span style="--dd:${i * 0.12}s" data-d="${d}">${'0123456789'.split('').map((n) => `<i>${n}</i>`).join('')}</span></span>`).join('')
     + (suf ? `<span class="suf" aria-hidden="true">${suf}</span>` : '');
-  const girar = () => b.querySelectorAll<HTMLElement>('[data-d]').forEach((s) => { s.style.transform = `translateY(-${Number(s.dataset.d)}em)`; });
+  const girar = () => b.querySelectorAll<HTMLElement>('[data-d]').forEach((s) => { s.style.transform = `translateY(-${Number(s.dataset.d) * 1.12}em)`; });
   if (reducido) girar(); else observar(b, girar);
 });
 
