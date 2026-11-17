@@ -86,6 +86,7 @@ enlacesNav.forEach((a) => { const s = document.querySelector(a.hash); if (s) ioN
 /* ═══ Menú a pantalla completa ═══ */
 const btnMenu = $('#btn-menu');
 const abrirMenu = (abrir: boolean) => {
+  document.documentElement.style.setProperty('--cab-fin', `${Math.round(cab.getBoundingClientRect().bottom)}px`);
   menuTotal.hidden = !abrir;
   btnMenu.setAttribute('aria-expanded', String(abrir));
   btnMenu.querySelector('.ocultar-movil')!.textContent = abrir ? 'Cerrar' : 'Menú';
@@ -125,7 +126,7 @@ pausar(reducido);
 document.addEventListener('visibilitychange', () => { if (document.hidden) clearTimeout(temporizador); else programar(); });
 
 // Tarjeta «¿Qué te gustaría estudiar?»: el primer micro-compromiso.
-$('#hc-opciones').innerHTML = CARRERAS.map((c) => `<button class="hc-op" data-c="${c.id}" style="--c:${c.color}"><i></i>${esc(c.corto)}</button>`).join('');
+$('#hc-opciones').innerHTML = CARRERAS.map((c) => `<button class="hc-op" data-c="${c.id}" style="--c:${c.color}" aria-label="${esc(c.nombre)}"><i></i><span class="c-l">${esc(c.corto)}</span><span class="c-c">${esc(c.corto.split(' ')[0])}</span></button>`).join('');
 $('#hc-opciones').addEventListener('click', (e) => {
   const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-c]'); if (!b) return;
   irAlFormulario(b.dataset.c as Carrera['id']);
@@ -319,8 +320,10 @@ if (punteroFino && !reducido) $$('.magnetico').forEach((b) => {
 });
 
 /* ═══ Barra móvil fija: visible fuera del héroe y lejos del formulario ═══ */
-let heroVisible = true, formVisible = false;
-const actualizarBarra = () => barra.classList.toggle('ver', !heroVisible && !formVisible);
+let heroVisible = true, formVisible = false; const finVisibles = new Set<Element>();
+const actualizarBarra = () => barra.classList.toggle('ver', !heroVisible && !formVisible && !finVisibles.size);
+const ioFin = new IntersectionObserver((es) => { for (const e of es) { if (e.isIntersecting) finVisibles.add(e.target); else finVisibles.delete(e.target); } actualizarBarra(); }, { threshold: 0.01 });
+ioFin.observe($('.cierre')); ioFin.observe($('.pie'));
 new IntersectionObserver(([e]) => { heroVisible = e.isIntersecting; actualizarBarra(); }, { threshold: 0.05 }).observe(hero);
 new IntersectionObserver(([e]) => { formVisible = e.isIntersecting; actualizarBarra(); }, { threshold: 0.05 }).observe($('#preinscripcion'));
 
@@ -337,6 +340,40 @@ $('#empujon-x').addEventListener('click', ocultarEmpujon);
 const t0 = Date.now();
 if (punteroFino) document.addEventListener('mouseout', (e) => { if (!e.relatedTarget && e.clientY <= 0 && Date.now() - t0 > 15000) mostrarEmpujon(); });
 else setTimeout(() => { if (scrollY > innerHeight * 2) mostrarEmpujon(); }, 50000);
+
+/* ═══ Celular: carruseles con profundidad y paginación ═══ */
+function carruselTactil(pista: HTMLElement) {
+  const puntos = pista.parentElement!.querySelector<HTMLElement>(':scope > .puntos');
+  const items = [...pista.children] as HTMLElement[];
+  if (puntos) puntos.innerHTML = items.map(() => '<i></i>').join('') + `<b>01 <span>/ ${String(items.length).padStart(2, '0')}</span></b>`;
+  const marcas = puntos ? [...puntos.querySelectorAll('i')] : [];
+  const contador = puntos?.querySelector('b');
+  let activo = -1, pendienteC = false;
+  const pintar = () => {
+    pendienteC = false;
+    if (!esCelular()) { items.forEach((it) => { it.style.removeProperty('--k'); it.style.removeProperty('--o'); }); return; }
+    const r = pista.getBoundingClientRect(); const centro = r.left + r.width / 2;
+    let mejor = 0, menor = Infinity;
+    items.forEach((it, i) => {
+      const b = it.getBoundingClientRect();
+      const d = Math.min(1, Math.abs(b.left + b.width / 2 - centro) / r.width);
+      if (d < menor) { menor = d; mejor = i; }
+      if (!reducido) { it.style.setProperty('--k', (1 - d * 0.09).toFixed(3)); it.style.setProperty('--o', (1 - d * 0.5).toFixed(3)); }
+    });
+    // al llegar al final, la última tarjeta queda activa aunque no esté centrada
+    if (pista.scrollLeft + pista.clientWidth >= pista.scrollWidth - 4) mejor = items.length - 1;
+    if (mejor !== activo) {
+      activo = mejor;
+      marcas.forEach((m, i) => m.classList.toggle('on', i === mejor));
+      if (contador) contador.innerHTML = `${String(mejor + 1).padStart(2, '0')} <span>/ ${String(items.length).padStart(2, '0')}</span>`;
+    }
+  };
+  const pedir = () => { if (!pendienteC) { pendienteC = true; requestAnimationFrame(pintar); } };
+  pista.addEventListener('scroll', pedir, { passive: true });
+  addEventListener('resize', pedir);
+  pintar();
+}
+[$('.bento'), $('#carrusel'), $('#tutos')].forEach(carruselTactil);
 
 /* ═══ Formulario y prueba social ═══ */
 iniciarFormulario();

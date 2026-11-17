@@ -252,7 +252,7 @@ export function iniciarFormulario() {
   form = $<HTMLFormElement>('#form');
   // Opciones de carrera
   $('#opc-carreras').innerHTML = CARRERAS.map((c) => `
-    <label class="opc" style="--c:${c.color}"><input type="radio" name="carrera" value="${c.id}"><span><b>${c.nombre}</b><small>${c.facultad}</small></span></label>`).join('');
+    <label class="opc" style="--c:${c.color}"><input type="radio" name="carrera" value="${c.id}"><span><b class="o-l">${c.nombre}</b><b class="o-c">${c.corto}</b><small>${c.facultad}</small></span></label>`).join('');
 
   restaurarBorrador();
   form.addEventListener('input', guardarBorrador);

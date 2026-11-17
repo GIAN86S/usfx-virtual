@@ -72,7 +72,7 @@ h1 em,h2 em{font-style:italic;font-weight:350}
 .btn:disabled{opacity:.6;cursor:wait}
 
 /* ── Anuncio ── */
-.anuncio{position:relative;z-index:60;display:flex;align-items:center;justify-content:center;gap:12px;padding:9px 46px;background:var(--firma);color:#fff;font-size:14px;text-align:center}
+.anuncio{position:relative;z-index:40;display:flex;align-items:center;justify-content:center;gap:12px;padding:9px 46px;background:var(--firma);color:#fff;font-size:14px;text-align:center}
 .anuncio p{margin:0}
 .anuncio a{font-weight:700;text-underline-offset:3px}
 .vivo{display:inline-block;width:8px;height:8px;border-radius:50%;background:#fff;margin-right:8px;vertical-align:1px;animation:latido 2s infinite}
@@ -154,6 +154,7 @@ h1 em,h2 em{font-style:italic;font-weight:350}
 .hc-op{display:flex;align-items:center;gap:9px;padding:11px 12px;border-radius:12px;background:#ffffff0d;border:1px solid #ffffff1f;color:#fff;cursor:pointer;text-align:left;font-size:13.5px;font-weight:600;line-height:1.25;transition:background .2s,border-color .2s,transform .2s var(--ease)}
 .hc-op i{flex:none;width:9px;height:9px;border-radius:50%;background:var(--c);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 30%,transparent)}
 .hc-op:hover{background:#ffffff1c;border-color:#ffffff55;transform:translateY(-2px)}
+.hc-op .c-c,.opc .o-c{display:none}
 .hc-pie{margin:14px 0 0;font-size:12.5px;color:#aebbd4}
 
 .hero-pie{display:flex;align-items:center;gap:18px;padding:18px 0 26px;border-top:1px solid #ffffff1f}
@@ -212,7 +213,7 @@ h1 em,h2 em{font-style:italic;font-weight:350}
 .busca-res{position:absolute;left:0;right:0;top:66px;max-height:380px;overflow:auto;background:#fff;border:1px solid var(--linea);border-radius:18px;box-shadow:var(--sombra2);padding:8px}
 .busca-res button{display:flex;align-items:center;gap:12px;width:100%;padding:11px 14px;border:0;background:none;border-radius:12px;text-align:left;cursor:pointer;font-size:14.5px}
 .busca-res button:hover,.busca-res button:focus-visible{background:var(--crema)}
-.busca-res mark{background:#e3343f22;color:inherit;border-radius:3px;padding:0 2px}
+.busca-res mark{background:#e3343f22;color:inherit;border-radius:2px;padding:0;box-shadow:0 0 0 2px #e3343f22}
 .busca-res .sig{flex:none;font:600 12px/1 ui-monospace,monospace;color:var(--suave);width:62px}
 .busca-res .car{margin-left:auto;flex:none;font-size:12px;font-weight:650;padding:4px 10px;border-radius:999px;color:#fff;background:var(--c)}
 .busca-res .nada{padding:14px;color:var(--suave);font-size:14.5px;margin:0}
@@ -582,6 +583,19 @@ h1 em,h2 em{font-style:italic;font-weight:350}
   body{font-size:16px}
   :root{--gutter:20px}
 
+  /* Menú a pantalla completa */
+  .menu-int{padding:calc(var(--cab-fin,72px) + 26px) var(--gutter) 40px;gap:28px}
+  .menu-col>a:not(.sec):not(.btn){font-size:33px;line-height:1.32}
+  .menu-lateral .sec{font-size:16px;padding:8px 0}
+  .menu-lateral .btn{width:100%}
+
+  /* Pestañas de carreras: se desvanecen en el borde para indicar que siguen */
+  .exp-tabs{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent)}
+
+  /* Carruseles con profundidad: la tarjeta del centro manda */
+  .bento>.bt,.carrusel>.doc,.tutos>.tuto{transform:scale(var(--k,1));opacity:var(--o,1);transition:transform .18s linear,opacity .18s linear,box-shadow .3s}
+  .bento>.bt.vis,.tutos>.tuto.vis{transform:scale(var(--k,1))}
+
   /* Ritmo: secciones más cortas */
   .carreras,.porque,.docentes,.admision,.preins,.tutoriales,.preguntas,.cita{padding-top:64px;padding-bottom:64px}
   .declaracion{padding-top:64px}
@@ -592,18 +606,20 @@ h1 em,h2 em{font-style:italic;font-weight:350}
 
   /* Portada */
   .hero{min-height:auto;padding-top:96px}
-  .titulo-hero{font-size:clamp(38px,11.2vw,50px);line-height:1.04}
+  .titulo-hero{font-size:clamp(34px,9.8vw,46px);line-height:1.06}
   .lead{font-size:16.5px;margin:18px 0 24px}
   .acciones{gap:10px}
   .acciones .btn{width:100%;min-height:52px}
   .garantia{font-size:12.5px;gap:4px 14px;margin-top:16px}
   .hero-grid{gap:22px;padding-bottom:22px}
-  .hero-card{padding:16px 0 16px 16px;border-radius:20px;margin-right:calc(var(--gutter) * -1);border-right:0;border-radius:20px 0 0 20px}
-  .hero-card h2{font-size:20px;margin-bottom:12px;padding-right:16px}
+  .hero-card{padding:18px;border-radius:20px}
+  .hero-card h2{font-size:20px;margin-bottom:14px}
   .hc-ceja{font-size:11px}
-  .hc-opciones{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:2px 16px 4px 0}
+  .hc-opciones{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
   .hc-opciones::-webkit-scrollbar{display:none}
-  .hc-op{flex:none;scroll-snap-align:start;padding:11px 14px;white-space:nowrap}
+  .hc-op{flex-direction:column;justify-content:center;gap:7px;padding:12px 4px;text-align:center;font-size:12.5px;border-radius:14px}
+  .hc-op .c-l{display:none}
+  .hc-op .c-c{display:inline}
   .hc-pie{display:none}
   .hero-pie{padding:14px 0 18px}
   .hero-cap{display:none}
@@ -650,6 +666,7 @@ h1 em,h2 em{font-style:italic;font-weight:350}
   .bt-num{margin-bottom:18px}
   .bt-a{min-height:340px}
   .bt-mapa{height:26%}
+  .bt-escudo{top:auto;bottom:22px;right:22px;width:46px}
 
   /* Docentes */
   .docentes{padding-left:var(--gutter)}
@@ -662,8 +679,8 @@ h1 em,h2 em{font-style:italic;font-weight:350}
 
   /* Admisión */
   .adm-txt{font-size:16px}
-  .adm-pasos::before,.adm-pasos::after{left:21px}
-  .paso{gap:18px}
+  .adm-pasos::before,.adm-pasos::after{left:21px;top:22px;bottom:22px}
+  .paso{gap:18px;padding-bottom:40px}
   .paso-n{width:44px;height:44px;font-size:18px}
   .paso h3{font-size:22px;padding-top:6px}
   .paso p{font-size:15px}
@@ -679,7 +696,12 @@ h1 em,h2 em{font-style:italic;font-weight:350}
   .opc-carreras{grid-template-columns:1fr 1fr;gap:8px}
   .opc span{padding:12px 10px 12px 36px;border-radius:12px}
   .opc span::before{left:11px;top:14px;width:16px;height:16px}
-  .opc b{font-size:13.5px}
+  .opc-carreras{grid-auto-rows:1fr}
+  .opc span{justify-content:center;min-height:50px}
+  .opc span::before{top:50%;margin-top:-8px}
+  .opc b{font-size:14px}
+  .opc .o-l{display:none}
+  .opc .o-c{display:inline}
   .opc small{display:none}
   .cmp input,.cmp select{height:56px}
   .form-acc #siguiente{flex:1}
@@ -710,15 +732,30 @@ h1 em,h2 em{font-style:italic;font-weight:350}
   .barra-movil .btn{min-height:38px;padding:0 16px;font-size:13.5px}
   .barra-movil.ver.oculta{transform:translateY(150%)}
 }
-/* Indicador de que se puede deslizar */
-.desliza{display:none}
+/* Paginación de carruseles: puntos que avanzan con el dedo + contador */
+.puntos{display:none}
 @media (max-width:720px){
-  .desliza{display:flex;align-items:center;gap:8px;margin:14px 0 0;font-size:12.5px;font-weight:600;color:var(--suave)}
-  .porque .desliza{color:#9fb0cf}
-  .desliza::after{content:"";width:28px;height:1.5px;background:currentColor;animation:desliza 1.8s var(--ease) infinite}
+  .puntos{display:flex;align-items:center;gap:6px;margin-top:18px;color:var(--noche)}
+  .docentes .puntos{padding-right:var(--gutter);gap:5px}
+  .docentes .puntos i{width:5px;height:5px}
+  .docentes .puntos i.on{width:18px}
+  .porque .puntos{color:#fff}
+  .puntos i{width:6px;height:6px;border-radius:999px;background:currentColor;opacity:.22;transition:width .4s var(--ease),opacity .4s}
+  .puntos i.on{width:24px;opacity:.95}
+  .puntos b{margin-left:auto;font:600 12px/1 ui-monospace,monospace;letter-spacing:.08em;opacity:.65;font-variant-numeric:tabular-nums}
+  .puntos b span{opacity:.55}
 }
-@keyframes desliza{0%{transform:translateX(0);opacity:1}100%{transform:translateX(14px);opacity:0}}
+/* Pantallas táctiles: sin efectos de mouse «pegados» y con respuesta al toque */
+@media (hover:none){
+  .faq summary:hover{color:inherit}
+  .exp-tab:not([aria-selected="true"]):hover{background:#fff}
+  .tuto:hover,.doc:hover,.carrera:hover,.enlaces-com a:hover,.btn:hover,.hc-op:hover{transform:none}
+  .tuto:hover .tuto-img img{transform:none}
+  .doc:hover img{transform:translateX(-50%)}
+  .btn:active,.hc-op:active,.circ:active,.copiar:active{transform:scale(.96);transition-duration:.08s}
+  .opc:active span,.curso summary:active,.faq summary:active,.exp-tab:active{transform:scale(.98);transition:transform .08s}
+  .tuto:active,.doc:active,.bt:active{filter:brightness(.94)}
+}
 @media (max-width:360px){
-  .opc-carreras{grid-template-columns:1fr}
-  .titulo-hero{font-size:37px}
+  .titulo-hero{font-size:34px}
 }
