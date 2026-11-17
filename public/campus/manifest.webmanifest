@@ -1,0 +1,36 @@
+{
+  "id": "usfx-campus",
+  "name": "Campus USFX",
+  "short_name": "Campus",
+  "description": "Campus virtual completo de la USFX: materias, notas, chat y administración.",
+  "lang": "es-BO",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#003b90",
+  "categories": [
+    "education"
+  ],
+  "icons": [
+    {
+      "src": "../icons/campus-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../icons/campus-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../icons/campus-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

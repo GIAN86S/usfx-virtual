@@ -1,0 +1,12 @@
+project_id = "usfx-virtual"
+
+[auth]
+enable_signup = true
+minimum_password_length = 8
+
+[auth.email]
+enable_signup = true
+enable_confirmations = false
+
+[functions.push-despacho]
+verify_jwt = false
