@@ -1,0 +1,36 @@
+{
+  "id": "usfx-matricula",
+  "name": "Matrícula USFX",
+  "short_name": "Matrícula",
+  "description": "Postulación, matrícula, inscripción de materias y pagos.",
+  "lang": "es-BO",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#0f5c4d",
+  "categories": [
+    "education"
+  ],
+  "icons": [
+    {
+      "src": "../icons/matricula-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../icons/matricula-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../icons/matricula-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
