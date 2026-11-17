@@ -8,6 +8,7 @@ const $ = <T extends HTMLElement = HTMLElement>(s: string, r: ParentNode = docum
 const $$ = <T extends HTMLElement = HTMLElement>(s: string, r: ParentNode = document) => [...r.querySelectorAll(s)] as T[];
 const reducido = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const punteroFino = matchMedia('(hover: hover) and (pointer: fine)').matches;
+const esCelular = () => innerWidth <= 720;
 const BASE = import.meta.env.BASE_URL;
 const img = (n: string) => `${BASE}landing/img/${n}.webp`;
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
@@ -60,7 +61,7 @@ try { if (sessionStorage.getItem('usfx-anuncio')) $('#anuncio').hidden = true; }
 $('#anuncio-x').addEventListener('click', () => { $('#anuncio').hidden = true; try { sessionStorage.setItem('usfx-anuncio', '1'); } catch { /* nada */ } });
 
 /* ═══ Cabecera inteligente + progreso + sección activa ═══ */
-const cab = $('#cab'); const prog = $('#progreso'); const menuTotal = $('#menu-total');
+const cab = $('#cab'); const prog = $('#progreso'); const menuTotal = $('#menu-total'); const barra = $('#barra-movil');
 let ultimoY = scrollY, pendiente = false;
 const alDesplazar = () => {
   pendiente = false;
@@ -68,6 +69,7 @@ const alDesplazar = () => {
   cab.classList.toggle('solida', y > 40 || !menuTotal.hidden);
   cab.classList.toggle('oculta', y > 500 && y > ultimoY + 4 && menuTotal.hidden === true);
   if (y < ultimoY - 4) cab.classList.remove('oculta');
+  barra.classList.toggle('oculta', cab.classList.contains('oculta'));
   ultimoY = y;
   const alto = document.documentElement.scrollHeight - innerHeight;
   prog.style.transform = `scaleX(${alto > 0 ? y / alto : 0})`;
@@ -167,7 +169,7 @@ tabs.innerHTML = CARRERAS.map((c, i) => `
     <i></i><span><b>${esc(c.nombre)}</b><small>${esc(c.facultad)}</small></span>
   </button>`).join('');
 const ROMANOS = ['Primer', 'Segundo', 'Tercer', 'Cuarto', 'Quinto'];
-function pintarCarrera(id: Carrera['id'], cursoAbierto = 0) {
+function pintarCarrera(id: Carrera['id'], cursoAbierto = esCelular() ? -1 : 0) {
   const c = CARRERAS.find((x) => x.id === id)!;
   $$<HTMLButtonElement>('.exp-tab', tabs).forEach((t) => { const on = t.dataset.c === id; t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; });
   panel.setAttribute('aria-labelledby', 'tab-' + id);
@@ -317,7 +319,6 @@ if (punteroFino && !reducido) $$('.magnetico').forEach((b) => {
 });
 
 /* ═══ Barra móvil fija: visible fuera del héroe y lejos del formulario ═══ */
-const barra = $('#barra-movil');
 let heroVisible = true, formVisible = false;
 const actualizarBarra = () => barra.classList.toggle('ver', !heroVisible && !formVisible);
 new IntersectionObserver(([e]) => { heroVisible = e.isIntersecting; actualizarBarra(); }, { threshold: 0.05 }).observe(hero);

@@ -47,7 +47,7 @@ h1 em,h2 em{font-style:italic;font-weight:350}
 .titulo-xl em,.titulo-l em{color:var(--rojo-o)}
 .claro em{color:#ff9aa0}
 /* palabras que suben (aplicado por JS) */
-.pal{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.1em;margin-bottom:-.1em}
+.pal{display:inline-block;overflow:hidden;vertical-align:top;padding:0 .08em .12em 0;margin:0 -.08em -.12em 0}
 .pal>span{display:inline-block;transform:translateY(108%);transition:transform .9s var(--ease) calc(var(--w)*45ms + var(--d,0s))}
 .vis .pal>span,.pal.vis>span{transform:none}
 
@@ -507,8 +507,8 @@ h1 em,h2 em{font-style:italic;font-weight:350}
   .tutos{grid-template-columns:repeat(3,1fr)}
 }
 @media (max-width:1020px){
-  .hero-grid{grid-template-columns:1fr}
-  .hero-card{max-width:520px}
+  .hero-grid{grid-template-columns:minmax(0,1fr)}
+  .hero-card{max-width:520px;min-width:0}
   .explorador{grid-template-columns:1fr}
   .exp-tabs{position:static;flex-direction:row;overflow-x:auto;scrollbar-width:none;margin:0 calc(var(--gutter) * -1);padding:4px var(--gutter)}
   .exp-tabs::-webkit-scrollbar{display:none}
@@ -569,4 +569,156 @@ h1 em,h2 em{font-style:italic;font-weight:350}
   [data-rev],.pal>span{opacity:1!important;transform:none!important}
   .cinta-pista{animation:none}
   .expansor{--p:1!important}
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   CELULAR · experiencia propia, no una versión apretada de la de compu.
+   Tarjetas que se deslizan con el dedo en lugar de apilarse, portada
+   compacta, barra inferior discreta y ritmo vertical más corto.
+   ════════════════════════════════════════════════════════════════════ */
+@media (max-width:720px){
+  html{-webkit-tap-highlight-color:transparent}
+  body{font-size:16px}
+  :root{--gutter:20px}
+
+  /* Ritmo: secciones más cortas */
+  .carreras,.porque,.docentes,.admision,.preins,.tutoriales,.preguntas,.cita{padding-top:64px;padding-bottom:64px}
+  .declaracion{padding-top:64px}
+  .cab-sec{margin-bottom:24px;gap:14px}
+  .titulo-l{font-size:clamp(30px,8.6vw,38px)}
+  .titulo-xl{font-size:clamp(33px,9.6vw,44px)}
+  .ceja{font-size:11.5px;letter-spacing:.15em;margin-bottom:14px}
+
+  /* Portada */
+  .hero{min-height:auto;padding-top:96px}
+  .titulo-hero{font-size:clamp(38px,11.2vw,50px);line-height:1.04}
+  .lead{font-size:16.5px;margin:18px 0 24px}
+  .acciones{gap:10px}
+  .acciones .btn{width:100%;min-height:52px}
+  .garantia{font-size:12.5px;gap:4px 14px;margin-top:16px}
+  .hero-grid{gap:22px;padding-bottom:22px}
+  .hero-card{padding:16px 0 16px 16px;border-radius:20px;margin-right:calc(var(--gutter) * -1);border-right:0;border-radius:20px 0 0 20px}
+  .hero-card h2{font-size:20px;margin-bottom:12px;padding-right:16px}
+  .hc-ceja{font-size:11px}
+  .hc-opciones{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:2px 16px 4px 0}
+  .hc-opciones::-webkit-scrollbar{display:none}
+  .hc-op{flex:none;scroll-snap-align:start;padding:11px 14px;white-space:nowrap}
+  .hc-pie{display:none}
+  .hero-pie{padding:14px 0 18px}
+  .hero-cap{display:none}
+  .hero-indic{flex:1}
+
+  /* Declaración: la foto muestra el claustro, no el cielo */
+  .dec-txt{font-size:16px;margin:20px auto 24px}
+  .expansor{margin-top:40px}
+  .expansor img{height:52vh;min-height:300px;object-position:50% 78%}
+  .expansor figcaption{font-size:12.5px;padding:40px 20px 16px}
+
+  /* Cifras: 2×2 compactas */
+  .cifras{padding:40px 14px}
+  .cifra{padding:22px 18px}
+  .cifra b{font-size:46px}
+  .cifra>span{font-size:13px;margin-top:10px}
+
+  /* Carreras */
+  .buscador{margin-bottom:16px}
+  .busca-campo{height:52px;padding:0 16px}
+  .busca-campo input{font-size:15px}
+  .busca-res{top:58px;max-height:52vh}
+  .exp-tabs{gap:6px;padding:2px var(--gutter) 8px}
+  .exp-tab{padding:10px 16px;border-radius:999px;background:#fff;border-color:var(--linea)}
+  .exp-tab b{font:600 14px/1.1 'Inter Variable',sans-serif;white-space:nowrap}
+  .exp-tab[aria-selected="true"]{background:var(--noche);border-color:var(--noche);color:#fff}
+  .exp-tab[aria-selected="true"] i{transform:scale(1.2)}
+  .explorador{gap:12px}
+  .exp-panel{border-radius:22px}
+  .exp-media{height:190px}
+  .exp-media-txt{left:20px;right:20px;bottom:16px}
+  .exp-media-txt h3{font-size:30px}
+  .exp-cuerpo{padding:20px;gap:22px}
+  .exp-resumen{font-size:15.5px}
+  .exp-acc .btn{width:100%}
+  .curso summary{padding:14px 2px}
+
+  /* Por qué: tarjetas que se deslizan */
+  .porque h2{margin-bottom:28px}
+  .bento{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:0 calc(var(--gutter) * -1);padding:0 var(--gutter) 6px}
+  .bento::-webkit-scrollbar{display:none}
+  .bt{flex:0 0 82%;scroll-snap-align:center;min-height:300px;padding:24px;display:flex;flex-direction:column}
+  .bt-a h3,.bt h3{font-size:25px}
+  .bt-num{margin-bottom:18px}
+  .bt-a{min-height:340px}
+  .bt-mapa{height:26%}
+
+  /* Docentes */
+  .docentes{padding-left:var(--gutter)}
+  .carr-ctrl{display:none}
+  .doc{width:74vw;max-width:290px}
+  .carrusel{gap:12px;scroll-snap-type:x mandatory}
+
+  /* Cita */
+  .cita blockquote{font-size:23px;line-height:1.35}
+
+  /* Admisión */
+  .adm-txt{font-size:16px}
+  .adm-pasos::before,.adm-pasos::after{left:21px}
+  .paso{gap:18px}
+  .paso-n{width:44px;height:44px;font-size:18px}
+  .paso h3{font-size:22px;padding-top:6px}
+  .paso p{font-size:15px}
+
+  /* Preinscripción */
+  .preins-lead{font-size:16.5px}
+  .beneficios{gap:10px;margin-bottom:22px}
+  .beneficios li{font-size:15px}
+  .preins-qr{display:none}
+  .form-marco{border-radius:24px;margin:0 -6px}
+  .form,.exito{padding:22px 18px;border-radius:22px}
+  .etapa legend{font-size:24px;margin-bottom:14px}
+  .opc-carreras{grid-template-columns:1fr 1fr;gap:8px}
+  .opc span{padding:12px 10px 12px 36px;border-radius:12px}
+  .opc span::before{left:11px;top:14px;width:16px;height:16px}
+  .opc b{font-size:13.5px}
+  .opc small{display:none}
+  .cmp input,.cmp select{height:56px}
+  .form-acc #siguiente{flex:1}
+  .codigo b{font-size:20px}
+  .exito-acc .btn{width:100%}
+
+  /* Tutoriales: carrusel */
+  .tutos{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:0 calc(var(--gutter) * -1);padding:0 var(--gutter) 8px}
+  .tutos::-webkit-scrollbar{display:none}
+  .tuto{flex:0 0 78%;scroll-snap-align:center}
+  .video{width:100vw;border-radius:0}
+  .video-marco{border-radius:0}
+  .video-x{top:-54px;right:12px}
+
+  /* Preguntas */
+  .faq summary{font-size:18px;padding:18px 2px;gap:14px}
+  .faq summary::after{width:30px;height:30px}
+  .faq details p{font-size:15px;padding:0 2px 18px}
+
+  /* Cierre */
+  .cierre{padding:80px var(--gutter)}
+  .cierre-logo{width:104px;margin-bottom:24px}
+  .cierre .btn{width:100%;font-size:15px;padding:0 18px}
+
+  /* Barra inferior: delgada y se esconde mientras bajas */
+  .barra-movil{left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));padding:6px 6px 6px 18px;font-size:12.5px}
+  .barra-movil span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .barra-movil .btn{min-height:38px;padding:0 16px;font-size:13.5px}
+  .barra-movil.ver.oculta{transform:translateY(150%)}
+}
+/* Indicador de que se puede deslizar */
+.desliza{display:none}
+@media (max-width:720px){
+  .desliza{display:flex;align-items:center;gap:8px;margin:14px 0 0;font-size:12.5px;font-weight:600;color:var(--suave)}
+  .porque .desliza{color:#9fb0cf}
+  .desliza::after{content:"";width:28px;height:1.5px;background:currentColor;animation:desliza 1.8s var(--ease) infinite}
+}
+@keyframes desliza{0%{transform:translateX(0);opacity:1}100%{transform:translateX(14px);opacity:0}}
+@media (max-width:360px){
+  .opc-carreras{grid-template-columns:1fr}
+  .titulo-hero{font-size:37px}
 }
