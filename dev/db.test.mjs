@@ -23,6 +23,8 @@ before(async () => {
   oferta = (await q(a, `insert into ofertas (materia_id,periodo_id,docente_id,cupo) values ($1,$2,$3,2) returning id`, [materia, periodo, U.docente]))[0].id;
   oferta2 = (await q(a, `insert into ofertas (materia_id,periodo_id,docente_id) values ($1,$2,$3) returning id`, [m2, periodo, U.docente2]))[0].id;
   for (const k of ['ana', 'beto', 'otra']) await q(a, `insert into estudiantes (id,codigo,carrera_id) values ($1,$2,$3)`, [U[k], 'C' + k, carrera]);
+  // Los estudiantes de prueba ya firmaron su contrato (sin generar cuotas, para no alterar las pruebas de finanzas).
+  await db.query(`insert into contratos (estudiante_id,gestion,plan,nombre_firma,ci_firma,texto) select id, app.gestion(), 'mensual', 'Estudiante de Prueba', '1234567', 'x' from estudiantes`);
   await q(a, `insert into docentes (id) values ($1),($2)`, [U.docente, U.docente2]);
   conv = (await q(a, `select id from conversaciones where oferta_id=$1`, [oferta]).catch(() => []))[0];
   conv = (await db.query(`select id from conversaciones where oferta_id=$1`, [oferta])).rows[0].id;
@@ -301,4 +303,135 @@ test('visitantes: activan avisos sin cuenta, nadie sin permiso los lee, solo adm
   assert.equal((await q(U.ana, `select conteo_avisos() c`))[0].c, null, 'un estudiante no ve el conteo');
   const subs = (await db.query(`select * from suscripciones_visitantes(null,null,0,10)`)).rows;
   assert.equal(subs[0].tabla, 'visitante_push');
+});
+
+/* ─── Aula virtual, contrato, pagos con QR y asistencia ─── */
+test('contrato: sin firmarlo no hay acceso a clases; al firmar se generan las cuotas del plan', async () => {
+  const nueva = await crearUsuario(db, 'nueva', { rol: 'estudiante', nombres: 'Nueva', apellidos: 'Estudiante', ci: '5551234' });
+  await q(U.admin, `insert into estudiantes (id,codigo,carrera_id) values ($1,'CN',$2)`, [nueva, carrera]);
+  await db.query(`insert into inscripciones (estudiante_id,oferta_id) values ($1,$2)`, [nueva, oferta]);
+  let [{ a }] = await q(nueva, `select mi_acceso() a`);
+  assert.equal(a.habilitado, false, 'sin contrato no entra a clases');
+  assert.equal((await q(nueva, `select * from temas where oferta_id=$1`, [oferta])).length, 0);
+  assert.equal((await q(nueva, `select enlace_clase from v_ofertas where id=$1`, [oferta]))[0].enlace_clase, null, 'sin enlace de clase en vivo');
+  await assert.rejects(q(nueva, `select firmar_contrato('mensual','Nueva Estudiante','999')`), /no coincide/);
+  await assert.rejects(q(nueva, `select firmar_contrato('trimestral','Nueva Estudiante','5551234')`), /plan/);
+  await q(nueva, `select firmar_contrato('mensual','Nueva Estudiante','5551234')`);
+  const cuotas = await q(nueva, `select monto, vence from cargos order by vence`);
+  assert.equal(cuotas.length, 10, '10 cuotas');
+  assert.ok(cuotas.every((c) => Number(c.monto) === 550), 'de Bs 550');
+  await assert.rejects(q(nueva, `select firmar_contrato('mensual','Nueva Estudiante','5551234')`), /Ya firmaste/);
+  // Cambia al plan anual: anula las cuotas y crea el pago único.
+  await q(nueva, `select cambiar_plan('anual')`);
+  const vigentes = await q(nueva, `select monto from cargos where estado <> 'anulado'`);
+  assert.deepEqual(vigentes.map((c) => Number(c.monto)), [5500]);
+  // Con el pago anual vencido queda suspendido; al pagarlo, vuelve.
+  [{ a }] = await q(nueva, `select mi_acceso() a`);
+  const vencido = (await db.query(`select vence < current_date v from cargos where estudiante_id=$1 and estado='pendiente'`, [nueva])).rows[0].v;
+  assert.equal(a.habilitado, !vencido);
+  await db.query(`update cargos set estado='pagado' where estudiante_id=$1 and estado='pendiente'`, [nueva]);
+  [{ a }] = await q(nueva, `select mi_acceso() a`);
+  assert.equal(a.habilitado, true);
+  await assert.rejects(q(nueva, `select cambiar_plan('mensual')`), /pago registrado/);
+});
+
+test('cobro por QR: solo la cuota propia, y solo el banco (servicio) puede confirmarlo', async () => {
+  await q(U.admin, `insert into cargos (estudiante_id,clave,concepto,descripcion,monto,vence) values ($1,'QR-1','mensualidad','Cuota QR',550,current_date+10)`, [U.beto]);
+  const [cargo] = await q(U.beto, `select id from cargos where clave='QR-1'`);
+  const [c1] = await q(U.beto, `select * from solicitar_cobro_qr($1)`, [cargo.id]);
+  const [c2] = await q(U.beto, `select * from solicitar_cobro_qr($1)`, [cargo.id]);
+  assert.equal(c1.referencia, c2.referencia, 'reutiliza el cobro vigente');
+  assert.equal(Number(c1.monto), 550);
+  await niega(q(U.ana, `select * from solicitar_cobro_qr($1)`, [cargo.id]), /no es tuya/);
+  await assert.rejects(q(U.beto, `select confirmar_cobro_qr($1,'TX1',550)`, [c1.referencia]), /permission/);
+  const srv = async (sql, args) => (await db.query(sql, args)).rows;
+  assert.equal((await srv(`select confirmar_cobro_qr($1,'TX1',500) r`, [c1.referencia]))[0].r, 'monto_insuficiente');
+  assert.equal((await srv(`select confirmar_cobro_qr($1,'TX1',550) r`, [c1.referencia]))[0].r, 'ok');
+  assert.equal((await srv(`select confirmar_cobro_qr($1,'TX1',550) r`, [c1.referencia]))[0].r, 'ya_pagado', 'no paga dos veces');
+  assert.equal((await q(U.beto, `select estado from cargos where id=$1`, [cargo.id]))[0].estado, 'pagado');
+  assert.equal((await q(U.beto, `select estado from pagos where cargo_id=$1`, [cargo.id]))[0].estado, 'aprobado');
+});
+
+test('tareas: el docente publica, el estudiante entrega sus archivos y el docente califica', async () => {
+  await db.query(`insert into inscripciones (estudiante_id,oferta_id) values ($1,$2) on conflict do nothing`, [U.ana, oferta]);
+  const [t] = await q(U.docente, `insert into tareas (oferta_id,titulo,instrucciones,vence_en,tipo_entrega,puntaje) values ($1,'Ensayo','Analiza el caso',now()+interval '2 days','ambos',20) returning id`, [oferta]);
+  assert.ok((await db.query(`select 1 from notificaciones where titulo like 'Nueva tarea%'`)).rows.length >= 1, 'avisa a los inscritos');
+  await niega(q(U.docente2, `insert into tareas (oferta_id,titulo,vence_en) values ($1,'Intruso',now()+interval '1 day')`, [oferta]), /row-level/);
+  await niega(q(U.ana, `insert into tareas (oferta_id,titulo,vence_en) values ($1,'Yo',now()+interval '1 day')`, [oferta]), /row-level|permission/);
+  assert.equal((await q(U.ana, `select * from tareas where id=$1`, [t.id])).length, 1);
+  assert.equal((await q(U.otra, `select * from tareas where id=$1`, [t.id])).length, 0, 'quien no está inscrito no la ve');
+  const ruta = `${oferta}/${t.id}/${U.ana}/ensayo.pdf`;
+  await como(db, U.ana, (tx) => tx.query(`insert into storage.objects (bucket_id,name) values ('entregas',$1)`, [ruta]));
+  await niega(como(db, U.beto, (tx) => tx.query(`insert into storage.objects (bucket_id,name) values ('entregas',$1)`, [`${oferta}/${t.id}/${U.ana}/falso.pdf`])), /row-level/);
+  await assert.rejects(q(U.ana, `select entregar_tarea($1,'mi texto',$2::jsonb)`, [t.id, JSON.stringify([{ ruta: `${oferta}/${t.id}/${U.beto}/x.pdf` }])]), /no válido/);
+  const [e] = await q(U.ana, `select * from entregar_tarea($1,'mi texto',$2::jsonb)`, [t.id, JSON.stringify([{ ruta, nombre: 'ensayo.pdf' }])]);
+  assert.equal(e.estado, 'entregada');
+  const [e2] = await q(U.ana, `select * from entregar_tarea($1,'texto corregido','[]'::jsonb)`, [t.id]);
+  assert.equal(e2.version, 2, 'puede corregir antes de la fecha');
+  assert.equal((await q(U.beto, `select * from entregas where tarea_id=$1`, [t.id])).length, 0, 'nadie ve la entrega de otro');
+  const panel = await q(U.docente, `select * from entregas_tarea($1)`, [t.id]);
+  assert.ok(panel.some((p) => p.estado === 'pendiente'), 'el docente ve quién no entregó');
+  await niega(q(U.ana, `select calificar_entrega($1,20,'')`, [e.id]));
+  await assert.rejects(q(U.docente, `select calificar_entrega($1,25,'')`, [e.id]), /entre 0 y 20/);
+  await q(U.docente, `select calificar_entrega($1,18,'Muy buen análisis')`, [e.id]);
+  await assert.rejects(q(U.ana, `select entregar_tarea($1,'otra vez','[]'::jsonb)`, [t.id]), /calificada/);
+  const [vencida] = await q(U.docente, `insert into tareas (oferta_id,titulo,abre_en,vence_en,tipo_entrega) values ($1,'Vencida',now()-interval '3 days',now()-interval '1 day','texto') returning id`, [oferta]);
+  await assert.rejects(q(U.ana, `select entregar_tarea($1,'tarde','[]'::jsonb)`, [vencida.id]), /fecha límite/);
+});
+
+test('foros: autor real, solo la clase participa, temas cerrados y fijados solo por el docente', async () => {
+  await db.query(`insert into inscripciones (estudiante_id,oferta_id) values ($1,$2) on conflict do nothing`, [U.ana, oferta]);
+  const [t] = await q(U.ana, `insert into foro_temas (oferta_id,titulo,cuerpo,autor_id,autor_nombre) values ($1,'Duda del caso','Como citar',$2,'Nombre Falso') returning *`, [oferta, U.beto]);
+  assert.equal(t.autor_id, U.ana, 'el autor lo pone la base');
+  assert.notEqual(t.autor_nombre, 'Nombre Falso');
+  await niega(q(U.ana, `insert into foro_temas (oferta_id,titulo,cuerpo,fijado) values ($1,'Fijado','x',true)`, [oferta]), /row-level/);
+  await niega(q(U.otra, `insert into foro_temas (oferta_id,titulo,cuerpo) values ($1,'Intruso','x')`, [oferta]), /row-level/);
+  assert.equal((await q(U.otra, `select * from foro_temas`)).length, 0);
+  await q(U.docente, `insert into foro_respuestas (tema_id,cuerpo) values ($1,'Usa la norma APA')`, [t.id]);
+  assert.equal((await q(U.ana, `select respuestas from foro_temas where id=$1`, [t.id]))[0].respuestas, 1);
+  assert.ok((await db.query(`select 1 from notificaciones where usuario_id=$1 and titulo='Nueva respuesta en el foro'`, [U.ana])).rows.length, 'avisa al autor');
+  await q(U.docente, `update foro_temas set cerrado=true where id=$1`, [t.id]);
+  await niega(q(U.ana, `insert into foro_respuestas (tema_id,cuerpo) values ($1,'una mas')`, [t.id]), /row-level/);
+  const r = await q(U.ana, `update foro_temas set fijado=true where id=$1 returning id`, [t.id]);
+  assert.equal(r.length, 0, 'un estudiante no fija temas');
+});
+
+test('cuestionarios: el estudiante nunca ve las respuestas correctas y la nota se calcula en el servidor', async () => {
+  await db.query(`insert into inscripciones (estudiante_id,oferta_id) values ($1,$2) on conflict do nothing`, [U.ana, oferta]);
+  const [c] = await q(U.docente, `insert into cuestionarios (oferta_id,titulo,cierra_en,duracion_min,intentos,publicado) values ($1,'Control 1',now()+interval '1 day',20,1,true) returning id`, [oferta]);
+  const [p1] = await q(U.docente, `insert into preguntas (cuestionario_id,orden,tipo,enunciado,opciones,correcta,puntaje) values ($1,1,'unica','Capital de Bolivia','[{"id":"a","texto":"Sucre"},{"id":"b","texto":"Lima"}]','"a"',2) returning id`, [c.id]);
+  const [p2] = await q(U.docente, `insert into preguntas (cuestionario_id,orden,tipo,enunciado,opciones,correcta) values ($1,2,'multiple','Pares','[{"id":"a","texto":"2"},{"id":"b","texto":"3"},{"id":"c","texto":"4"}]','["a","c"]') returning id`, [c.id]);
+  const [p3] = await q(U.docente, `insert into preguntas (cuestionario_id,orden,tipo,enunciado,correcta) values ($1,3,'vf','La USFX se fundo en 1624','true') returning id`, [c.id]);
+  await q(U.docente, `insert into preguntas (cuestionario_id,orden,tipo,enunciado) values ($1,4,'abierta','Explica')`, [c.id]);
+  assert.equal((await q(U.ana, `select * from preguntas`)).length, 0, 'el estudiante no lee la tabla de preguntas');
+  const [{ r: ini }] = await q(U.ana, `select iniciar_intento($1) r`, [c.id]);
+  assert.equal(ini.preguntas.length, 4);
+  assert.ok(ini.preguntas.every((p) => !('correcta' in p)), 'sin respuestas correctas');
+  const resp = { [p1.id]: 'a', [p2.id]: ['c', 'a'], [p3.id]: false };
+  const [{ r: res }] = await q(U.ana, `select enviar_intento($1,$2::jsonb) r`, [ini.intento_id, JSON.stringify(resp)]);
+  assert.equal(Number(res.puntaje), 3, 'unica (2) + multiple en otro orden (1) y la V/F equivocada (0)');
+  assert.equal(Number(res.puntaje_max), 5);
+  await assert.rejects(q(U.ana, `select enviar_intento($1,'{}'::jsonb)`, [ini.intento_id]), /ya fue enviado/);
+  await assert.rejects(q(U.ana, `select iniciar_intento($1)`, [c.id]), /todos tus intentos/);
+  await assert.rejects(q(U.beto, `select enviar_intento($1,'{}'::jsonb)`, [ini.intento_id]), /no encontrado/);
+  await assert.rejects(q(U.otra, `select iniciar_intento($1)`, [c.id]), /inscrito/);
+  const tabla = await q(U.docente, `select * from resultados_cuestionario($1)`, [c.id]);
+  assert.equal(Number(tabla.find((x) => x.estudiante_id === U.ana).mejor), 3);
+  await niega(q(U.ana, `select revisar_intento($1,5,'')`, [ini.intento_id]));
+});
+
+test('asistencia obligatoria: alerta al estudiante cuando baja del minimo', async () => {
+  const [o] = await q(U.admin, `insert into ofertas (materia_id,periodo_id,docente_id,paralelo) values ($1,$2,$3,'Z') returning id`, [materia, periodo, U.docente]);
+  await db.query(`insert into inscripciones (estudiante_id,oferta_id) values ($1,$2)`, [U.beto, o.id]);
+  for (const [d, est] of [[1, 'presente'], [2, 'falta'], [3, 'falta']]) {
+    await q(U.docente, `select pasar_asistencia($1, current_date - $2::int, 'Clase', $3::jsonb)`, [o.id, d, JSON.stringify([{ estudiante_id: U.beto, estado: est }])]);
+  }
+  const [r] = await q(U.docente, `select * from resumen_asistencia($1)`, [o.id]);
+  assert.equal(Number(r.porcentaje), 33.3);
+  assert.equal(r.en_riesgo, true);
+  const alertas = (await db.query(`select * from notificaciones where usuario_id=$1 and titulo like 'Asistencia en riesgo%'`, [U.beto])).rows;
+  assert.equal(alertas.length, 1, 'una sola alerta');
+  const mia = (await q(U.beto, `select * from mi_asistencia_materias()`)).find((x) => x.oferta_id === o.id);
+  assert.equal(Number(mia.porcentaje), 33.3);
+  await niega(q(U.beto, `select * from resumen_asistencia($1)`, [o.id]));
 });

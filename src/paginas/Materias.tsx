@@ -5,11 +5,13 @@ import { usePerfil } from '../lib/sesion';
 import { MODALIDAD, fecha } from '../lib/util';
 import { Estado, Vacio } from '../ui/ui';
 import { misOfertas } from './datos';
+import { AvisoAcceso } from './Aula';
 
 export default function Materias() {
   const p = usePerfil();
   const q = useQuery({ queryKey: ['mis-ofertas', p.id], queryFn: () => misOfertas(p) });
   return (
+    <>{p.rol === 'estudiante' && <div style={{ marginBottom: 14 }}><AvisoAcceso /></div>}
     <Estado q={q} vacio={<div className="tarjeta"><Vacio icono={<BookOpen size={34} strokeWidth={1.4} />} titulo={p.rol === 'docente' ? 'No tienes materias asignadas' : 'Aún no inscribiste materias'} accion={p.rol === 'estudiante' ? <Link className="boton prim" to="/inscripcion">Inscribir materias</Link> : undefined} /></div>}>
       <div className="rejilla">
         {(q.data ?? []).map((o: any) => (
@@ -23,6 +25,6 @@ export default function Materias() {
           </Link>
         ))}
       </div>
-    </Estado>
+    </Estado></>
   );
 }

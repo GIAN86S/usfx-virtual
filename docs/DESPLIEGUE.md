@@ -89,3 +89,43 @@ La migración `20261117000006_preinscripciones.sql` crea la captación de postul
 - Los avisos usan la misma función `push-despacho` y las mismas claves VAPID. No hay que configurar nada más.
 - En iPhone, el aviso push solo funciona si la persona agrega la página a su pantalla de inicio. Por eso el WhatsApp sigue siendo el canal principal.
 - Defensas: trampa para robots, freno de 120 preinscripciones por minuto, y una misma persona y carrera en 24 horas devuelve la misma ficha.
+
+## 5. Aula virtual, contrato y pagos con QR
+
+La migración `20261118000008_aula_contrato_pagos.sql` agrega:
+
+- **Tareas** con entregas de archivos, videos o texto; el docente califica y comenta. Bucket privado `entregas`.
+- **Foros** por materia y **cuestionarios** con calificación automática (las respuestas correctas nunca llegan al navegador).
+- **Asistencia obligatoria:** aviso al estudiante cuando baja de `asistencia_minima` (desde la tercera clase).
+- **Contrato del estudiante:** sin contrato firmado de la gestión, o con cuotas vencidas, se suspende el acceso a clases (temario, materiales, tareas, foros, cuestionarios y enlace de clase en vivo).
+- **Plan de pagos:** mensual (`cuotas_por_gestion` × `monto_mensualidad`) o anual (`monto_plan_anual`).
+
+Configura en **Configuración** antes de abrir la gestión:
+
+| Clave | Valor inicial | Revisar |
+|---|---|---|
+| `gestion_actual` | año en curso | Gestión de los contratos |
+| `monto_mensualidad` | 550 | |
+| `cuotas_por_gestion` | 10 | |
+| `monto_plan_anual` | 5500 | Confirmar si el plan anual tiene descuento |
+| `primer_vencimiento` | 10 de marzo | Quien firma después vence su primera cuota 7 días tras firmar |
+| `texto_contrato` | texto provisional | **Reemplazar por el contrato oficial de la DAF** |
+| `asistencia_minima` | 75 | Porcentaje mínimo |
+
+### Cobro por QR verificable (banco)
+
+Flujo: el estudiante toca **Pagar con QR** → la función `qr-banco` reserva una referencia única y pide el QR al banco → el estudiante paga desde la app de su banco → el banco llama a `qr-banco-webhook` → la cuota queda pagada y el estudiante recibe un aviso. Un aviso repetido del banco no paga dos veces.
+
+Mientras no esté configurado, el botón ofrece **Reportar comprobante** (revisión manual de Finanzas).
+
+Cuando el banco entregue su especificación técnica:
+
+1. Ajusta `crearQrEnBanco()` en `supabase/functions/qr-banco/index.ts` (dirección, autenticación y campos).
+2. Ajusta los nombres de campos y la cabecera de firma en `supabase/functions/qr-banco-webhook/index.ts`.
+3. Carga los secretos:
+   ```bash
+   npx supabase secrets set BANCO_API_URL=... BANCO_API_KEY=... BANCO_WEBHOOK_SECRETO=... BANCO_CABECERA_FIRMA=...
+   npx supabase functions deploy qr-banco
+   npx supabase functions deploy qr-banco-webhook
+   ```
+4. Entrega al banco la dirección del webhook: `https://TU_PROYECTO.supabase.co/functions/v1/qr-banco-webhook`.

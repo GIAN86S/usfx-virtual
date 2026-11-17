@@ -151,7 +151,7 @@ try {
   await ruta('/notas'); paso('notas bloqueadas por deuda', await hayTexto('Tus notas están bloqueadas')); await foto('17-bloqueo');
   const r1 = await ev(`(async()=>{const s=JSON.parse(localStorage.getItem('usfx-sesion'));const r=await fetch('/rest/v1/notas?select=*',{headers:{authorization:'Bearer '+s.access_token,apikey:'demo'}});return (await r.json()).length})()`);
   paso('ni pidiendo a la API directo ve notas', r1 === 0, String(r1));
-  await ruta('/pagos'); await hayTexto('Mensualidad de octubre'); await clic('Reportar pago', 'button'); await w(200);
+  await ruta('/pagos'); await hayTexto('Mensualidad de octubre'); await clic('Reportar comprobante', 'button'); await w(200);
   await escribe('N.º de transacción', 'QR-555'); await archivo('.modal input[type=file]', azul);
   await foto('18-reportar-pago'); await clic('Enviar a revisión', 'button');
   paso('comprobante enviado', await hayTexto('En revisión'));
@@ -185,6 +185,15 @@ try {
   paso('panel de administración', await hayTexto('Estudiantes activos')); await w(400); await foto('22-admin-inicio');
   await ruta('/postulaciones'); await hayTexto('Nuevo Postulante'); await clic('Revisar', 'button'); await w(700); await foto('23-revisar');
   await clic('Aprobar', 'button'); paso('administración aprueba', await hayTexto('Postulación actualizada'));
+  // El estudiante recién aprobado no tiene contrato: su acceso a clases está suspendido hasta firmarlo.
+  await entrar('nuevo.post', 'campus', 'clave-segura-1');
+  await ruta('/materias'); paso('estudiante sin contrato ve su acceso suspendido', await hayTexto('acceso a clases está suspendido'));
+  await ruta('/contrato'); await hayTexto('Elige tu plan'); await clic('Plan anual', 'button');
+  await ev(`[...document.querySelectorAll('label')].find(l=>l.innerText.includes('acepto sus condiciones')).querySelector('input').click()`);
+  await clic('Firmar contrato', 'button');
+  paso('firma su contrato y ve su plan anual', await hasta(`location.hash.startsWith('#/pagos') && document.body.innerText.includes('Plan anual')`), (await texto()).slice(0, 300));
+  paso('acceso a clases habilitado tras firmar', await hayTexto('Habilitado')); await foto('23b-contrato-firmado');
+  await entrar('admin');
   await ruta('/usuarios'); await hayTexto('usuarios'); await w(300); await foto('24-usuarios');
   await clic('Nuevo usuario', 'button'); await elige('Rol', 'Docente'); await escribe('Usuario', 'doc.nuevo'); await escribe('Nombres', 'Docente'); await escribe('Apellidos', 'Creado');
   await clic('Crear usuario', 'button'); paso('crea usuario y muestra clave temporal', await hayTexto('Clave temporal'));

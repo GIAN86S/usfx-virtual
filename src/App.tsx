@@ -3,7 +3,7 @@ import { Link, Navigate, NavLink, Route, Routes, useLocation, useNavigate } from
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Bell, BookOpen, BookOpenCheck, Building2, CalendarDays, ClipboardCheck, ClipboardList, FileCheck2, GraduationCap, History, Home, Layers,
-  LogOut, Megaphone, Menu, MessagesSquare, Settings, UserRound, Users, Wallet, FileBarChart, Target,
+  LogOut, Megaphone, Menu, MessagesSquare, Settings, UserRound, Users, Wallet, FileBarChart, Target, FileSignature,
 } from 'lucide-react';
 import { useSesion } from './lib/sesion';
 import { dato, sb } from './lib/sb';
@@ -35,6 +35,7 @@ const Postulaciones = pag(() => import('./paginas/AdminFinanzas'), 'Postulacione
 const Finanzas = pag(() => import('./paginas/AdminFinanzas'), 'Finanzas');
 const Reportes = pag(() => import('./paginas/AdminFinanzas'), 'Reportes');
 const Preinscritos = pag(() => import('./paginas/Preinscritos'), 'Preinscritos');
+const Contrato = pag(() => import('./paginas/Contrato'), 'Contrato');
 
 const APP = document.body.dataset.app as 'campus' | 'chat' | 'notas' | 'matricula';
 const NOMBRE = document.body.dataset.nombre || 'USFX Virtual';
@@ -51,6 +52,7 @@ const ITEMS: Item[] = [
   { ruta: '/horario', titulo: 'Horario', icono: CalendarDays, roles: ['estudiante', 'docente'], apps: ['campus', 'notas'], comp: Horario },
   { ruta: '/postulacion', titulo: 'Mi postulación', corto: 'Postulación', icono: FileCheck2, roles: ['postulante'], apps: ['campus', 'matricula'], comp: Postulacion },
   { ruta: '/inscripcion', titulo: 'Inscribir materias', corto: 'Inscribir', icono: ClipboardList, roles: ['estudiante'], apps: ['campus', 'matricula'], comp: Inscripcion },
+  { ruta: '/contrato', titulo: 'Mi contrato', corto: 'Contrato', icono: FileSignature, roles: ['estudiante'], apps: ['campus', 'matricula'], comp: Contrato },
   { ruta: '/pagos', titulo: 'Matrícula y pagos', corto: 'Pagos', icono: Wallet, roles: ['estudiante'], apps: ['campus', 'matricula'], comp: Pagos },
   { ruta: '/chat', titulo: 'Chat', icono: MessagesSquare, roles: ['sistemas', 'admin', 'finanzas', 'director', 'docente', 'estudiante'], apps: ['campus', 'chat'], comp: Chat },
   { ruta: '/comunicados', titulo: 'Comunicados', icono: Megaphone, roles: ['sistemas', 'admin', 'finanzas', 'director', 'docente'], apps: ['campus', 'chat'], comp: Comunicados },

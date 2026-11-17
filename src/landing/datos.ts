@@ -342,5 +342,6 @@ export const TUTORIALES = [
   { id: 'JpDnHoAyuYs', img: 'subir-documentos.webp', titulo: 'Subir documentos', paso: 'Paso 2' },
   { id: '_7LktxfayM0', img: 'examen-admision.jpg', titulo: 'Examen de admisión', paso: 'Paso 3' },
   { id: 'Qf51cGgRrRo', img: 'pago-matricula.jpg', titulo: 'Pago de matrícula', paso: 'Paso 4' },
+  { id: '-1MJyJm-U-w', img: 'firma-contrato.webp', titulo: 'Firma de contrato', paso: 'Paso 5' },
   { id: 'Qg5QrRJYw7s', img: 'admision-profesionales.webp', titulo: 'Admisión para profesionales', paso: 'Profesionales' },
 ];

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { CalendarDays, GraduationCap, Lock } from 'lucide-react';
+import { CalendarDays, ClipboardCheck, GraduationCap, Lock } from 'lucide-react';
 import { usePerfil } from '../lib/sesion';
 import { dato, rpc, sb } from '../lib/sb';
 import { bs, DIAS, fecha, nombreDe } from '../lib/util';
@@ -91,6 +91,7 @@ const TXT: Record<string, [string, string]> = { presente: ['Presente', 'ok'], at
 export function MiAsistencia() {
   const p = usePerfil();
   const of = useQuery({ queryKey: ['mis-ofertas', p.id], queryFn: () => misOfertas(p) });
+  const minimo = useQuery({ queryKey: ['asistencia-minima'], staleTime: 600_000, queryFn: async () => Number((dato(await sb.from('configuracion').select('valor').eq('clave', 'asistencia_minima').maybeSingle()) as any)?.valor ?? 75) });
   const q = useQuery({ queryKey: ['mi-asistencia', p.id], queryFn: async () => dato(await sb.from('v_asistencia_estudiante').select('*').eq('estudiante_id', p.id).order('fecha', { ascending: false }).limit(500)) as any[] });
   const reporte = () => ({
     titulo: 'Registro de asistencia', subtitulo: nombreDe(p), archivo: `Asistencia_${p.usuario}`,
@@ -100,6 +101,7 @@ export function MiAsistencia() {
   return (
     <Estado q={q} vacio={<div className="tarjeta"><Vacio titulo="Aún no hay asistencia registrada" /></div>}>
       <div className="pila">
+        <div className="aviso"><ClipboardCheck size={18} /><span><b>La asistencia es obligatoria.</b> Necesitas al menos {minimo.data ?? 75}% en cada materia. Si bajas del mínimo, te avisaremos en tu celular.</span></div>
         <div className="fila entre"><span /><Exportar reporte={reporte} /></div>
         <div className="rejilla">
           {(of.data ?? []).map((o: any) => {
@@ -110,7 +112,7 @@ export function MiAsistencia() {
             return (
               <section className="tarjeta" key={o.id}>
                 <div className="fila entre"><h3 className="corta">{o.materia}</h3><b>{pc}%</b></div>
-                <div className="barra" style={{ margin: '8px 0' }}><i style={{ width: pc + '%', background: pc < 75 ? 'var(--rojo)' : 'var(--verde)' }} /></div>
+                <div className="barra" style={{ margin: '8px 0' }}><i style={{ width: pc + '%', background: pc < (minimo.data ?? 75) ? 'var(--rojo)' : 'var(--verde)' }} /></div>
                 {m.slice(0, 8).map((a: any) => <div className="fila entre chico" key={a.fecha} style={{ padding: '3px 0' }}><span>{fecha(a.fecha)}</span><span className={'etiqueta ' + TXT[a.estado][1]}>{TXT[a.estado][0]}</span></div>)}
               </section>
             );

@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { AlertTriangle, Camera, Check, CheckCircle2, ClipboardList, FileCheck2, Receipt, Search, Upload, Wallet } from 'lucide-react';
+import { AlertTriangle, Camera, Check, CheckCircle2, ClipboardList, FileCheck2, QrCode, Receipt, Search, Upload, Wallet } from 'lucide-react';
+import { AvisoAcceso, useAcceso } from './Aula';
+import { PlanesPago } from './Contrato';
 import { usePerfil, useSesion } from '../lib/sesion';
-import { dato, rpc, sb } from '../lib/sb';
+import { dato, funcion, rpc, sb } from '../lib/sb';
 import { bs, DIAS, fecha, MODALIDAD, nombreDe } from '../lib/util';
 import { subir, useUrl } from '../lib/archivos';
 import { Campo, Estado, Exportar, Kpi, Modal, useAviso, Vacio } from '../ui/ui';
@@ -200,6 +202,9 @@ export function Pagos() {
   const pagos = useQuery({ queryKey: ['mis-pagos', p.id], queryFn: async () => dato(await sb.from('pagos').select('*').eq('estudiante_id', p.id).order('creado_en', { ascending: false }).limit(200)) as any[] });
   const inst = useQuery({ queryKey: ['config-pago'], staleTime: 600_000, queryFn: async () => dato(await sb.from('configuracion').select('valor').eq('clave', 'instrucciones_pago').maybeSingle()) as any });
   const [pagar, setPagar] = useState<any>(null);
+  const [qr, setQr] = useState<any>(null);
+  const [cambiar, setCambiar] = useState(false);
+  const acc = useAcceso();
   const hoy = new Date().toISOString().slice(0, 10);
   const reporte = () => ({
     titulo: 'Estado de cuenta', subtitulo: `${nombreDe(p)} · CI ${p.ci ?? ''}`, archivo: `Estado_cuenta_${p.usuario}`,
@@ -211,13 +216,21 @@ export function Pagos() {
       <div className="kpis">
         <Kpi titulo="Vencido" valor={bs(fin.data?.deuda_vencida)} />
         <Kpi titulo="Por vencer" valor={bs(fin.data?.por_vencer)} />
-        <Kpi titulo="Acceso a notas" valor={fin.data ? (fin.data.al_dia ? 'Habilitado' : 'Bloqueado') : '—'} />
+        <Kpi titulo="Acceso a clases" valor={acc.data ? (acc.data.habilitado ? 'Habilitado' : 'Suspendido') : '—'} />
       </div>
+      <AvisoAcceso />
+      {acc.data?.contrato && (
+        <div className="tarjeta fila entre envolver">
+          <div><b>Plan {acc.data.contrato.plan} · gestión {acc.data.gestion}</b>
+            <div className="chico tenue">{acc.data.contrato.plan === 'mensual' ? `${Number(acc.data.cuotas)} cuotas de ${bs(acc.data.monto_mensualidad)}` : `Pago único de ${bs(acc.data.monto_anual)}`} · Paga con QR desde la app de tu banco.</div></div>
+          <button className="boton ch" onClick={() => setCambiar(true)}>Cambiar plan</button>
+        </div>
+      )}
       {inst.data?.valor && <div className="aviso"><Wallet size={18} /><span style={{ whiteSpace: 'pre-wrap' }}>{String(inst.data.valor)}</span></div>}
       <div className="fila entre"><h2>Cargos</h2><Exportar reporte={reporte} disabled={!q.data?.length} /></div>
       <Estado q={q} vacio={<div className="tarjeta"><Vacio icono={<Receipt size={34} strokeWidth={1.4} />} titulo="No tienes cargos" /></div>}>
         <div className="pila-s">
-          {(q.data ?? []).map((c: any) => {
+          {(q.data ?? []).filter((c: any) => c.estado !== 'anulado').map((c: any) => {
             const vencido = c.vence < hoy && ['pendiente', 'en_revision'].includes(c.estado);
             const rech = (pagos.data ?? []).find((x: any) => x.cargo_id === c.id && x.estado === 'rechazado');
             return (
@@ -226,7 +239,10 @@ export function Pagos() {
                   <div className="crece" style={{ minWidth: 160 }}><b>{c.descripcion}</b><div className={'chico ' + (vencido ? '' : 'tenue')} style={vencido ? { color: 'var(--rojo)' } : undefined}>Vence {fecha(c.vence)}</div></div>
                   <b>{bs(c.monto)}</b>
                   <span className={'etiqueta ' + (vencido ? 'mal' : EST_CARGO[c.estado][1])}>{vencido && c.estado === 'pendiente' ? 'Vencido' : EST_CARGO[c.estado][0]}</span>
-                  {c.estado === 'pendiente' && <button className="boton ch prim" onClick={() => setPagar(c)}><Upload size={15} />Reportar pago</button>}
+                  {c.estado === 'pendiente' && <span className="fila" style={{ gap: 6 }}>
+                    <button className="boton ch prim" onClick={() => setQr(c)}><QrCode size={15} />Pagar con QR</button>
+                    <button className="boton ch" onClick={() => setPagar(c)}><Upload size={15} />Reportar comprobante</button>
+                  </span>}
                 </div>
                 {c.estado === 'pendiente' && rech && <div className="aviso mal chico" style={{ marginTop: 8 }}>Tu último comprobante fue rechazado: {rech.motivo}</div>}
               </div>
@@ -235,7 +251,73 @@ export function Pagos() {
         </div>
       </Estado>
       {pagar && <ReportarPago cargo={pagar} cerrar={() => setPagar(null)} />}
+      {qr && <PagoQR cargo={qr} cerrar={() => setQr(null)} comprobante={() => { setPagar(qr); setQr(null); }} />}
+      {cambiar && acc.data && <CambiarPlan a={acc.data} cerrar={() => setCambiar(false)} />}
     </div>
+  );
+}
+
+/* ─── Pago con QR verificable: el banco confirma y la cuota se marca sola ─── */
+function PagoQR({ cargo, cerrar, comprobante }: { cargo: any; cerrar: () => void; comprobante: () => void }) {
+  const qc = useQueryClient();
+  const q = useQuery({ queryKey: ['qr', cargo.id], retry: false, gcTime: 0, queryFn: () => funcion<any>('qr-banco', { cargo_id: cargo.id }) });
+  // Mientras el QR está abierto, revisa cada 5 segundos si el banco ya confirmó el pago.
+  const estado = useQuery({
+    queryKey: ['cargo-estado', cargo.id], enabled: !!q.data?.qr, refetchInterval: 5000,
+    queryFn: async () => (dato(await sb.from('cargos').select('estado').eq('id', cargo.id).single()) as any).estado as string,
+  });
+  const pagado = estado.data === 'pagado';
+  useEffect(() => { if (pagado) for (const k of ['mis-cargos', 'mis-pagos', 'estado-fin', 'mi-acceso']) qc.invalidateQueries({ queryKey: [k] }); }, [pagado, qc]);
+  return (
+    <Modal titulo={`Pagar ${bs(cargo.monto)}`} cerrar={cerrar}>
+      {q.isLoading ? <div className="pila" style={{ alignItems: 'center' }}><div className="esq" style={{ width: 240, height: 240 }} /><span className="tenue chico">Generando tu QR…</span></div>
+        : q.error ? (
+          <div className="pila">
+            <div className="aviso"><QrCode size={18} /><span>{/habilitado|disponible/i.test((q.error as any).message) ? 'El pago con QR estará disponible muy pronto.' : (q.error as any).message} Mientras tanto, paga a la cuenta institucional y reporta tu comprobante.</span></div>
+            <button className="boton prim" onClick={comprobante}><Upload size={16} />Reportar comprobante</button>
+          </div>
+        ) : pagado ? (
+          <div className="pila" style={{ alignItems: 'center', textAlign: 'center' }}>
+            <CheckCircle2 size={56} color="#1f7a4b" />
+            <h2 style={{ margin: 0 }}>Pago confirmado</h2>
+            <p className="tenue" style={{ margin: 0 }}>El banco verificó tu pago. Ya no necesitas enviar comprobante.</p>
+            <button className="boton prim" onClick={cerrar}>Listo</button>
+          </div>
+        ) : (
+          <div className="pila" style={{ alignItems: 'center', textAlign: 'center' }}>
+            <img src={q.data.qr.startsWith('data:') ? q.data.qr : `data:image/png;base64,${q.data.qr}`} alt={`Código QR para pagar ${bs(cargo.monto)}`} width={260} height={260} style={{ imageRendering: 'pixelated', background: '#fff', padding: 8, borderRadius: 8 }} />
+            <div><b>{cargo.descripcion}</b><div className="chico tenue">Referencia {q.data.referencia} · válido hasta {fecha(q.data.expira_en)}</div></div>
+            <ol className="chico" style={{ textAlign: 'left', margin: 0 }}>
+              <li>Abre la app de tu banco y elige pagar con QR.</li>
+              <li>Escanea este código o guárdalo como imagen y súbelo.</li>
+              <li>Confirma el pago: esta pantalla se actualiza sola.</li>
+            </ol>
+            <a className="boton ch" download={`QR-${q.data.referencia}.png`} href={q.data.qr.startsWith('data:') ? q.data.qr : `data:image/png;base64,${q.data.qr}`}>Guardar QR</a>
+          </div>
+        )}
+    </Modal>
+  );
+}
+
+function CambiarPlan({ a, cerrar }: { a: any; cerrar: () => void }) {
+  const aviso = useAviso(); const qc = useQueryClient();
+  const [plan, setPlan] = useState(a.contrato.plan);
+  const guardar = async () => {
+    try {
+      await rpc('cambiar_plan', { p_plan: plan });
+      aviso('Plan actualizado');
+      for (const k of ['mi-acceso', 'mis-cargos', 'estado-fin']) qc.invalidateQueries({ queryKey: [k] });
+      cerrar();
+    } catch (x: any) { aviso(x.message, true); }
+  };
+  return (
+    <Modal titulo="Cambiar plan de pagos" cerrar={cerrar}>
+      <div className="pila">
+        <PlanesPago a={a} valor={plan} cambiar={setPlan} />
+        <p className="chico tenue" style={{ margin: 0 }}>Solo puedes cambiar de plan antes de pagar tu primera cuota.</p>
+        <button className="boton prim" disabled={plan === a.contrato.plan} onClick={guardar}>Guardar plan</button>
+      </div>
+    </Modal>
   );
 }
 function ReportarPago({ cargo, cerrar }: { cargo: any; cerrar: () => void }) {

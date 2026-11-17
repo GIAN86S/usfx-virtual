@@ -55,6 +55,8 @@ export async function sembrar(db, hash) {
   for (const k of ests) {
     await q(`insert into estudiantes (id,codigo,carrera_id) values ($1, app.nuevo_codigo(), $2)`, [U[k], C.SIS]);
   }
+  // Todos firmaron el contrato de la gestión (el de prueba sin cuotas automáticas, para controlar la demo).
+  await q(`insert into contratos (estudiante_id,gestion,plan,nombre_firma,ci_firma,texto) select id, app.gestion(), 'mensual', 'Firma de demostración', '1234567', 'Contrato de demostración' from estudiantes`);
   await q('insert into docentes (id,titulo,especialidad,biografia) values ($1,$2,$3,$4),($5,$6,$7,$8),($9,$10,$11,$12)', [U.docente, 'M.Sc.', 'Ingeniería de Software', 'Docente de programación con experiencia en sistemas universitarios.', U.docente2, 'Lic.', 'Matemática', 'Docente de ciencias básicas.', U.docente3, 'Ing.', 'Redes y Telecomunicaciones', 'Docente de redes y seguridad.']);
   await q(`insert into cv_items (docente_id,tipo,titulo,institucion,desde) values ($1,'formacion','Maestría en Ingeniería de Software','USFX','2018-02-01'),($1,'experiencia','Docente titular','USFX','2019-02-01')`, [U.docente]);
 
@@ -82,6 +84,15 @@ export async function sembrar(db, hash) {
   const t1 = (await como(db, U.docente, (tx) => tx.query(`insert into temas (oferta_id,orden,titulo,descripcion) values ($1,1,'Fundamentos de programación','Variables, tipos de datos y control de flujo.') returning id`, [O.prog]))).rows[0].id;
   await como(db, U.docente, (tx) => tx.query(`insert into temas (oferta_id,orden,titulo) values ($1,2,'Estructuras de datos')`, [O.prog]));
   await como(db, U.docente, (tx) => tx.query(`insert into materiales (oferta_id,tema_id,tipo,titulo,url) values ($1,$2,'video','Clase grabada: variables','https://www.youtube.com/watch?v=demo')`, [O.prog, t1]));
+  // Aula: una tarea abierta, un tema del foro y un cuestionario.
+  await como(db, U.docente, (tx) => tx.query(`insert into tareas (oferta_id,titulo,instrucciones,vence_en,tipo_entrega,puntaje) values ($1,'Ejercicios de variables','Resuelve los 5 ejercicios del tema 1 y sube tu archivo en PDF o una foto clara de tu cuaderno.',now()+interval '5 days','ambos',20)`, [O.prog]));
+  await como(db, U.docente, (tx) => tx.query(`insert into foro_temas (oferta_id,titulo,cuerpo,fijado) values ($1,'Presentación del curso','Bienvenidos. Cuéntennos en una línea desde qué ciudad estudian y qué esperan de la materia.',true)`, [O.prog]));
+  const cu = (await como(db, U.docente, (tx) => tx.query(`insert into cuestionarios (oferta_id,titulo,instrucciones,cierra_en,duracion_min,intentos,publicado) values ($1,'Control de lectura 1','Tienes 10 minutos y 2 intentos.',now()+interval '7 days',10,2,true) returning id`, [O.prog]))).rows[0].id;
+  await como(db, U.docente, (tx) => tx.query(`insert into preguntas (cuestionario_id,orden,tipo,enunciado,opciones,correcta,puntaje) values
+    ($1,1,'unica','¿Qué guarda una variable?','[{"id":"a","texto":"Un valor"},{"id":"b","texto":"Una pantalla"},{"id":"c","texto":"Un cable"}]','"a"',2),
+    ($1,2,'multiple','¿Cuáles son tipos de datos?','[{"id":"a","texto":"Entero"},{"id":"b","texto":"Teclado"},{"id":"c","texto":"Texto"}]','["a","c"]',2),
+    ($1,3,'vf','Un bucle repite instrucciones.','[]','true',1),
+    ($1,4,'abierta','Explica con tus palabras qué es un algoritmo.','[]',null,3)`, [cu]));
   // Finanzas: el estudiante al día; el moroso con un cargo vencido.
   await q(`insert into cargos (estudiante_id,clave,concepto,descripcion,monto,vence,estado) values ($1,'MATR-2026','matricula','Matrícula 2026',350,current_date-90,'pagado'),($2,'MATR-2026','matricula','Matrícula 2026',350,current_date-90,'pagado')`, [U.estudiante, U.moroso]);
   await q(`insert into cargos (estudiante_id,clave,concepto,descripcion,monto,vence) values ($1,'MENS-OCT','mensualidad','Mensualidad de octubre',400,current_date-10),($2,'MENS-NOV','mensualidad','Mensualidad de noviembre',400,current_date+15)`, [U.moroso, U.estudiante]);

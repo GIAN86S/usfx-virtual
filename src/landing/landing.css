@@ -435,7 +435,7 @@ h1 em,h2 em{font-style:italic;font-weight:350}
 
 /* ══ 11 · Tutoriales ══ */
 .tutoriales{padding:clamp(80px,10vw,140px) var(--gutter);background:var(--crema)}
-.tutos{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.tutos{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .tuto{position:relative;display:flex;flex-direction:column;border-radius:20px;overflow:hidden;background:#fff;border:1px solid var(--linea);cursor:pointer;text-align:left;padding:0;box-shadow:var(--sombra);transition:transform .3s var(--ease),box-shadow .3s}
 .tuto:hover{transform:translateY(-6px);box-shadow:var(--sombra2)}
 .tuto-img{position:relative;overflow:hidden}

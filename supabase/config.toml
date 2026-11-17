@@ -10,3 +10,6 @@ enable_confirmations = false
 
 [functions.push-despacho]
 verify_jwt = false
+
+[functions.qr-banco-webhook]
+verify_jwt = false

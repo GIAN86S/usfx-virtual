@@ -137,6 +137,7 @@ export function crearGateway(db, { dist, dominio = 'usuarios.usfx.invalid' }) {
       const r = await tx.query(`select * from public.${ident(fn)}(${a})`, args, { parsers: PARSERS });
       if (info.proretset) return r.rows;
       if (info.typname === 'void') return null;
+      if (info.typtype === 'c') return r.rows[0] ?? null; // fila completa, igual que Supabase
       return Object.values(r.rows[0] ?? {})[0] ?? null;
     });
   }

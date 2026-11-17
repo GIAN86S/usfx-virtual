@@ -2,13 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  ArrowLeft, BookOpen, CalendarCheck, ClipboardList, Download, ExternalLink, File, FileText, Film, GraduationCap, Image as Img, Link2, Lock, Music, Plus, Presentation, Save, Settings, Trash2, Upload, UserRound, Users, Video,
+  ArrowLeft, BookOpen, CalendarCheck, ClipboardList, ListChecks, MessagesSquare, Download, ExternalLink, File, FileText, Film, GraduationCap, Image as Img, Link2, Lock, Music, Plus, Presentation, Save, Settings, Trash2, Upload, UserRound, Users, Video,
 } from 'lucide-react';
 import { dato, rpc, sb } from '../lib/sb';
 import { usePerfil } from '../lib/sesion';
 import { DIAS, fecha, hoyISO, nombreDe, tamano, tipoDeArchivo } from '../lib/util';
 import { subir, urlFirmada } from '../lib/archivos';
 import { Avatar, Campo, Estado, Exportar, Modal, Pestanas, useAviso, Vacio } from '../ui/ui';
+import { AvisoAcceso, Cuestionarios, Foro, RiesgoAsistencia, Tareas, useAcceso } from './Aula';
 
 const ESTADOS: [string, string, string][] = [['presente', 'P', 'Presente'], ['atraso', 'A', 'Atraso'], ['licencia', 'L', 'Licencia'], ['falta', 'F', 'Falta']];
 
@@ -20,8 +21,13 @@ export default function Materia() {
   const o = q.data;
   const gestiona = !!o && (p.id === o.docente_id || ['sistemas', 'admin', 'director'].includes(p.rol));
   const h = useQuery({ queryKey: ['horario', id], queryFn: async () => dato(await sb.from('horarios').select('*').eq('oferta_id', id!).order('dia')) as any[] });
+  const acc = useAcceso();
+  const suspendido = !gestiona && !!acc.data?.es_estudiante && !acc.data.habilitado;
   const ops: [string, string, any][] = [
     ['contenido', 'Contenido', <BookOpen size={16} />],
+    ['tareas', 'Tareas', <ClipboardList size={16} />],
+    ['foro', 'Foro', <MessagesSquare size={16} />],
+    ['cuestionarios', 'Cuestionarios', <ListChecks size={16} />],
     ...(gestiona ? [['asistencia', 'Asistencia', <CalendarCheck size={16} />], ['notas', 'Notas', <GraduationCap size={16} />], ['lista', 'Estudiantes', <Users size={16} />], ['ajustes', 'Ajustes', <Settings size={16} />]] as any : [['docente', 'Docente', <UserRound size={16} />]]),
   ];
   return (
@@ -40,10 +46,16 @@ export default function Materia() {
               {o.enlace_clase && <a className="boton prim" href={o.enlace_clase} target="_blank" rel="noopener noreferrer"><Video size={17} />Entrar a clase</a>}
             </div>
           </div>
+          <AvisoAcceso />
           <div>
             <Pestanas opciones={ops} valor={tab} cambiar={setTab} />
+            {suspendido && ['contenido', 'tareas', 'foro', 'cuestionarios'].includes(tab) ? null : <>
             {tab === 'contenido' && <Contenido oferta={o} gestiona={gestiona} />}
-            {tab === 'asistencia' && <Asistencia oferta={o} />}
+            {tab === 'tareas' && <Tareas oferta={o} gestiona={gestiona} />}
+            {tab === 'foro' && <Foro oferta={o} gestiona={gestiona} />}
+            {tab === 'cuestionarios' && <Cuestionarios oferta={o} gestiona={gestiona} />}
+            </>}
+            {tab === 'asistencia' && <div className="pila"><RiesgoAsistencia oferta={o} /><Asistencia oferta={o} /></div>}
             {tab === 'notas' && <Planilla oferta={o} />}
             {tab === 'lista' && <Lista oferta={o} />}
             {tab === 'ajustes' && <Ajustes oferta={o} />}
